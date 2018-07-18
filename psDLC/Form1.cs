@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace psDLC
@@ -149,8 +150,9 @@ namespace psDLC
             File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "fake_dlc_temp/param_template.sfx", SFX(cntId, Name, Strings.Mid(TID, 1, 9)));
             File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "fake_dlc_temp/fake_dlc_project.gp4", GP4(cntId));
             RunOrbis("sfo_create fake_dlc_temp\\param_template.sfx fake_dlc_temp\\sce_sys\\param.sfo");
+            Thread.Sleep(1000);
             RunOrbis("img_create " + AppDomain.CurrentDomain.BaseDirectory + "fake_dlc_temp\\fake_dlc_project.gp4 " + AppDomain.CurrentDomain.BaseDirectory + "\\fake_dlc_pkg\\" + cntId + "-A0000-V0100.pkg");
-            Directory.Delete(AppDomain.CurrentDomain.BaseDirectory +"fake_dlc_temp", true);
+          //  Directory.Delete(AppDomain.CurrentDomain.BaseDirectory +"fake_dlc_temp", true);
         }
 
 
