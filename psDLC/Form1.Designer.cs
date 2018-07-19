@@ -38,13 +38,16 @@
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.Button2 = new System.Windows.Forms.Button();
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
+            this.Button3 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // Button1
             // 
-            this.Button1.Location = new System.Drawing.Point(724, 32);
+            this.Button1.AutoSize = true;
+            this.Button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.142858F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Button1.Location = new System.Drawing.Point(224, 27);
             this.Button1.Name = "Button1";
-            this.Button1.Size = new System.Drawing.Size(201, 35);
+            this.Button1.Size = new System.Drawing.Size(201, 39);
             this.Button1.TabIndex = 0;
             this.Button1.Text = "Get DLC List";
             this.Button1.UseVisualStyleBackColor = true;
@@ -94,10 +97,15 @@
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(32, 34);
+            this.textBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.857143F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBox1.Location = new System.Drawing.Point(15, 30);
+            this.textBox1.MaxLength = 9;
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(675, 29);
+            this.textBox1.Size = new System.Drawing.Size(190, 34);
             this.textBox1.TabIndex = 4;
+            this.textBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.textBox1.Enter += new System.EventHandler(this.textBox1_Enter);
+            this.textBox1.Leave += new System.EventHandler(this.textBox1_Leave);
             // 
             // textBox2
             // 
@@ -110,6 +118,8 @@
             // 
             // Button2
             // 
+            this.Button2.AutoSize = true;
+            this.Button2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.142858F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Button2.Location = new System.Drawing.Point(1133, 624);
             this.Button2.Name = "Button2";
             this.Button2.Size = new System.Drawing.Size(161, 39);
@@ -128,11 +138,25 @@
             this.linkLabel1.TabIndex = 7;
             this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
             // 
+            // Button3
+            // 
+            this.Button3.AutoSize = true;
+            this.Button3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.142858F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Button3.Location = new System.Drawing.Point(1084, 31);
+            this.Button3.Name = "Button3";
+            this.Button3.Size = new System.Drawing.Size(215, 39);
+            this.Button3.TabIndex = 8;
+            this.Button3.Text = "Get Update PKG";
+            this.Button3.UseVisualStyleBackColor = true;
+            this.Button3.Visible = false;
+            this.Button3.Click += new System.EventHandler(this.Button3_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1309, 926);
+            this.ClientSize = new System.Drawing.Size(1312, 926);
+            this.Controls.Add(this.Button3);
             this.Controls.Add(this.linkLabel1);
             this.Controls.Add(this.Button2);
             this.Controls.Add(this.textBox2);
@@ -161,6 +185,7 @@
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.Button Button2;
         private System.Windows.Forms.LinkLabel linkLabel1;
+        private System.Windows.Forms.Button Button3;
     }
 }
 

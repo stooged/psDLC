@@ -1,9 +1,9 @@
 ﻿using Microsoft.VisualBasic;
 using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Windows.Forms;
 
 namespace psDLC
@@ -13,7 +13,8 @@ namespace psDLC
 
         PDL PDL1 = new PDL();
         int pageNum;
-        String htmBuffer, titleID, titleRgn, selName, selCid;
+        String htmBuffer, titleID, titleRgn, selName, selCid, selManifest;
+        Boolean textHint;
 
         public Form1()
         {
@@ -25,6 +26,13 @@ namespace psDLC
         {
             PDL1.GotDlcList += GotDlcList;
             PDL1.DlcListError += DlcListError;
+            PDL1.GotPkgList += GotPkgList;
+            PDL1.PkgListError += PkgListError;
+            PDL1.GotManifest += GotManifest;
+            PDL1.ManifestError += ManifestError;
+            textHint = true;
+            textBox1.ForeColor = Color.Gray;
+            textBox1.Text = "CUSA00000";
         }
 
 
@@ -63,11 +71,10 @@ namespace psDLC
                     Spl4 = Regex.Split(Spl3[1], "<");
                     TmpTitle = Strings.Trim(Spl4[0]);
                     TmpTitle = TmpTitle.Replace("&#x2122;", "");
-                    TmpTitle = TmpTitle.Replace("&#x2019;", "'");
+                    TmpTitle = TmpTitle.Replace("&#x2019;", "’");
                     TmpTitle = TmpTitle.Replace("&apos;", "'");
                     TmpTitle = TmpTitle.Replace("&amp;", "&");
 
-               
                     Spl3 = Regex.Split(Spl2[0], "a href=\"");
                     Spl4 = Regex.Split(Spl3[1], "\"");
                     TmpURL = "https://store.playstation.com" + Strings.Trim(Spl4[0]);
@@ -92,18 +99,34 @@ namespace psDLC
         }
 
 
-        private void Button1_Click(object sender, EventArgs e)
+        void GotPkgList(object sender, PDL e)
         {
-            textBox2.Clear();
-            Button2.Visible = false;
-            linkLabel1.Text = "";
-            if (textBox1.Text.Length >= 19)
+            string PlData = e.PkgListData, ContentID, TmpTitle; ;
+            string[] Spl1, Spl2;
+
+            Spl1 = Regex.Split(PlData, "content_id=\"");
+            Spl2 = Regex.Split(Spl1[1], "\"");
+            ContentID = Strings.Trim(Spl2[0]);
+
+            Spl1 = Regex.Split(PlData, "manifest_url=\"");
+            Spl2 = Regex.Split(Spl1[1], "\"");
+            selManifest = Strings.Trim(Spl2[0]);
+
+            Spl1 = Regex.Split(PlData, "<title>");
+            Spl2 = Regex.Split(Spl1[1], "</title>");
+            TmpTitle = Strings.Trim(Spl2[0]);
+            Regex rgrep = new Regex("[^ -~]+");
+            TmpTitle = rgrep.Replace(TmpTitle, "");
+            Text = TmpTitle;
+
+            if (ContentID.Length >= 19)
             {
+                Button3.Visible = true;
                 pageNum = 1;
                 htmBuffer = string.Empty;
-                titleID = Strings.Mid(textBox1.Text, 8, 12);
+                titleID = Strings.Mid(ContentID, 8, 12);
 
-                switch (Strings.Mid(textBox1.Text, 1, 1))
+                switch (Strings.Mid(ContentID, 1, 1))
                 {
                     case "U":
                         titleRgn = "en-us";
@@ -120,7 +143,55 @@ namespace psDLC
             }
             else
             {
-                OrbisLog("ERROR: Invalid Content ID" + Environment.NewLine + "Use the content id in the following format XX0000-CUSA00000_00-0000000000000000");
+                OrbisLog("ERROR: Invalid Content ID" + Environment.NewLine + "Failed to load content id for " + textBox1.Text);
+            }
+        }
+
+
+        void PkgListError(object sender, PDL e)
+        {
+            OrbisLog("ERROR: " + e.PkgListErrorMessage);
+        }
+
+
+        void GotManifest(object sender, PDL e)
+        {
+            string PlData = e.ManifestData;
+            string[] Spl1, Spl2;
+            Spl1 = Regex.Split(PlData, "\"url\":\"");
+            for (int i = 1; i < Information.UBound(Spl1) + 1; i++)
+            {
+
+                Spl2 = Regex.Split(Spl1[i], "\"");
+                textBox2.Text = textBox2.Text + Spl2[0] + Environment.NewLine;
+            }
+        }
+
+
+        void ManifestError(object sender, PDL e)
+        {
+            OrbisLog("ERROR: " + e.ManifestErrorMessage);
+        }
+        
+
+        private void Button1_Click(object sender, EventArgs e)
+        {
+            if (textHint == false)
+            {
+                textBox2.Clear();
+                Button2.Visible = false;
+                Button3.Visible = false;
+                linkLabel1.Text = "";
+                Text = "psDLC";
+                textBox1.Text = textBox1.Text.ToUpper();
+                if (textBox1.Text.Length == 9)
+                {
+                    PDL1.GetPkgList(textBox1.Text);
+                }
+                else
+                {
+                    OrbisLog("ERROR: Invalid Content ID" + Environment.NewLine + "Use the content id in the following format CUSA00000");
+                }
             }
         }
 
@@ -140,19 +211,26 @@ namespace psDLC
         }
 
 
+        private void Button3_Click(object sender, EventArgs e)
+        {
+            textBox2.Clear();
+            PDL1.GetManifest(selManifest);
+        }
+
+
         private void CreatePKG(string CID, string Name, string TID)
         {
             string[] Spl1;
             Spl1 = Regex.Split(CID, "/");
+            Name = Regex.Replace(Name, "[^A-Za-z0-9 ]", "");
             string cntId = Spl1[Information.UBound(Spl1)];
             Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "fake_dlc_temp/sce_sys/");
             Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "fake_dlc_pkg/");
             File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "fake_dlc_temp/param_template.sfx", SFX(cntId, Name, Strings.Mid(TID, 1, 9)));
             File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "fake_dlc_temp/fake_dlc_project.gp4", GP4(cntId));
             RunOrbis("sfo_create fake_dlc_temp\\param_template.sfx fake_dlc_temp\\sce_sys\\param.sfo");
-            Thread.Sleep(1000);
             RunOrbis("img_create " + AppDomain.CurrentDomain.BaseDirectory + "fake_dlc_temp\\fake_dlc_project.gp4 " + AppDomain.CurrentDomain.BaseDirectory + "\\fake_dlc_pkg\\" + cntId + "-A0000-V0100.pkg");
-          //  Directory.Delete(AppDomain.CurrentDomain.BaseDirectory +"fake_dlc_temp", true);
+            Directory.Delete(AppDomain.CurrentDomain.BaseDirectory +"fake_dlc_temp", true);
         }
 
 
@@ -194,6 +272,29 @@ namespace psDLC
             return tmpStr;
         }
 
+
+        private void textBox1_Enter(object sender, EventArgs e)
+        {
+            if (textHint)
+            {
+                textHint = false;
+                textBox1.Text = "";
+                textBox1.ForeColor = Color.Black;
+            }
+        }
+
+
+        private void textBox1_Leave(object sender, EventArgs e)
+        {
+            if (!textHint && string.IsNullOrEmpty(textBox1.Text))
+            {
+                textHint = true;
+                textBox1.Text = "CUSA00000";
+                textBox1.ForeColor = Color.Gray;
+            }
+        }
+
+
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             if (linkLabel1.Text.Length > 6)
@@ -201,6 +302,7 @@ namespace psDLC
                 Process.Start(linkLabel1.Text);
             }
         }
+        
 
         private void LV1_SelectedIndexChanged(object sender, EventArgs e)
         {
