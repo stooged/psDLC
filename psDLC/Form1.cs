@@ -253,7 +253,7 @@ namespace psDLC
         string GP4(string CID)
         {
             string cDir = AppDomain.CurrentDomain.BaseDirectory;
-            string gTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            string gTime = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             string tmpStr = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>";
             tmpStr += "<psproject fmt=\"gp4\" version=\"1000\">";
             tmpStr += "<volume>";
