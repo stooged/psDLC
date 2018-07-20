@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
@@ -13,7 +14,7 @@ namespace psDLC
 
         PDL PDL1 = new PDL();
         int pageNum;
-        String htmBuffer, titleID, titleRgn, selName, selCid, selManifest;
+        String htmBuffer, titleID, titleRgn, selName, selCid, selManifest, selImg;
         Boolean textHint;
 
         public Form1()
@@ -30,6 +31,8 @@ namespace psDLC
             PDL1.PkgListError += PkgListError;
             PDL1.GotManifest += GotManifest;
             PDL1.ManifestError += ManifestError;
+            PDL1.GotImage += GotImage;
+            PDL1.ImageError += ImageError;
             textHint = true;
             textBox1.ForeColor = Color.Gray;
             textBox1.Text = "CUSA00000";
@@ -46,7 +49,7 @@ namespace psDLC
         {
             string PlData = e.DlcListData;
             string[] Spl1, Spl2, Spl3, Spl4;
-            string TmpTitle, TmpURL, TmpType, TmpPlatForm;
+            string TmpTitle, TmpURL, TmpImgUrl, TmpType, TmpPlatForm;
 
             if (Strings.InStr(PlData, "paginator-control__end paginator-control__arrow-navigation internal-app-link ember-view") > 0)
             {
@@ -79,6 +82,10 @@ namespace psDLC
                     Spl4 = Regex.Split(Spl3[1], "\"");
                     TmpURL = "https://store.playstation.com" + Strings.Trim(Spl4[0]);
 
+                    Spl3 = Regex.Split(Spl2[0], "img src=\"http");
+                    Spl4 = Regex.Split(Spl3[1], "\"");
+                    TmpImgUrl = "http" + Strings.Trim(Spl4[0]);
+
                     Spl3 = Regex.Split(Spl2[0], "left-detail--detail-2\">");
                     Spl4 = Regex.Split(Spl3[1], "<");
                     TmpType = Strings.Trim(Spl4[0]);
@@ -87,7 +94,7 @@ namespace psDLC
                     Spl4 = Regex.Split(Spl3[1], "<");
                     TmpPlatForm = Strings.Trim(Spl4[0]);
 
-                    string[] TmpItem = { TmpTitle, TmpType, TmpPlatForm, TmpURL };
+                    string[] TmpItem = { TmpTitle, TmpType, TmpPlatForm, TmpURL, TmpImgUrl };
                     var LvItem = new ListViewItem(TmpItem);
                     LV1.Items.Add(LvItem);
 
@@ -172,8 +179,26 @@ namespace psDLC
         {
             OrbisLog("ERROR: " + e.ManifestErrorMessage);
         }
-        
 
+
+        void GotImage(object sender, PDL e)
+        {
+            string imagePath = AppDomain.CurrentDomain.BaseDirectory + "fake_dlc_temp/sce_sys/icon0";
+            var bitmap = Bitmap.FromFile(imagePath + ".jpeg");
+            bitmap.Save(imagePath + ".png", ImageFormat.Png);
+            bitmap.Dispose();
+            File.Delete(imagePath + ".jpeg");
+            CreatePKG(selCid, selName, titleID, true);
+        }
+
+
+        void ImageError(object sender, PDL e)
+        {
+            OrbisLog("IMAGE ERROR: " + e.ImageErrorMessage + Environment.NewLine + "Creating without icon0.png");
+            CreatePKG(selCid, selName, titleID);
+        }
+        
+    
         private void Button1_Click(object sender, EventArgs e)
         {
             if (textHint == false)
@@ -202,7 +227,9 @@ namespace psDLC
             Button2.Visible = false;
             if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "orbis-pub-cmd.exe"))
             {
-                CreatePKG(selCid, selName, titleID);
+                Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "fake_dlc_temp/sce_sys/");
+                Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "fake_dlc_pkg/");
+                PDL1.GetImage(selImg, AppDomain.CurrentDomain.BaseDirectory + "fake_dlc_temp/sce_sys/icon0.jpeg");
             }
             else
             {
@@ -218,16 +245,14 @@ namespace psDLC
         }
 
 
-        private void CreatePKG(string CID, string Name, string TID)
+        private void CreatePKG(string CID, string Name, string TID, bool hasImage = false)
         {
             string[] Spl1;
             Spl1 = Regex.Split(CID, "/");
             Name = Regex.Replace(Name, "[^A-Za-z0-9 ]", "");
             string cntId = Spl1[Information.UBound(Spl1)];
-            Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "fake_dlc_temp/sce_sys/");
-            Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "fake_dlc_pkg/");
             File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "fake_dlc_temp/param_template.sfx", SFX(cntId, Name, Strings.Mid(TID, 1, 9)));
-            File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "fake_dlc_temp/fake_dlc_project.gp4", GP4(cntId));
+            File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "fake_dlc_temp/fake_dlc_project.gp4", GP4(cntId, hasImage));
             RunOrbis("sfo_create fake_dlc_temp\\param_template.sfx fake_dlc_temp\\sce_sys\\param.sfo");
             RunOrbis("img_create " + "fake_dlc_temp\\fake_dlc_project.gp4 \"" + AppDomain.CurrentDomain.BaseDirectory + "\\fake_dlc_pkg\\" + cntId + "-A0000-V0100.pkg\"");
             Directory.Delete(AppDomain.CurrentDomain.BaseDirectory +"fake_dlc_temp", true);
@@ -250,7 +275,7 @@ namespace psDLC
         }
 
 
-        string GP4(string CID)
+        string GP4(string CID, bool hasImage)
         {
             string cDir = AppDomain.CurrentDomain.BaseDirectory;
             string gTime = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
@@ -263,6 +288,10 @@ namespace psDLC
             tmpStr += "<package content_id=\"" + CID + "\" passcode=\"00000000000000000000000000000000\"/>";
             tmpStr += "</volume>";
             tmpStr += "<files img_no=\"0\">";
+            if (hasImage == true)
+            {
+                tmpStr += "<file targ_path=\"sce_sys/icon0.png\" orig_path=\"" + cDir + "fake_dlc_temp\\sce_sys\\icon0.png\"/>";
+            }
             tmpStr += "<file targ_path=\"sce_sys/param.sfo\" orig_path=\"" + cDir + "fake_dlc_temp\\sce_sys\\param.sfo\"/>";
             tmpStr += "</files>";
             tmpStr += "<rootdir>";
@@ -314,6 +343,7 @@ namespace psDLC
                 linkLabel1.Text = LvItem.SubItems[3].Text;
                 selName = LvItem.Text;
                 selCid = LvItem.SubItems[3].Text;
+                selImg = LvItem.SubItems[4].Text;
                 Button2.Visible = true;
             }
         }

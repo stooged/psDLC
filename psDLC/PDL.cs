@@ -14,13 +14,16 @@ namespace psDLC
         public event EventHandler<PDL> PkgListError;
         public event EventHandler<PDL> GotManifest;
         public event EventHandler<PDL> ManifestError;
+        public event EventHandler<PDL> GotImage;
+        public event EventHandler<PDL> ImageError;
+
         public string DlcListData { get; internal set; }
         public string DlcListErrorMessage { get; internal set; }
         public string PkgListData { get; internal set; }
         public string PkgListErrorMessage { get; internal set; }
         public string ManifestData { get; internal set; }
         public string ManifestErrorMessage { get; internal set; }
-
+        public string ImageErrorMessage { get; internal set; }
 
         public void GetDlcList(string TitleID, string Region, int Pagenumber)
         {
@@ -63,6 +66,28 @@ namespace psDLC
             oWeb.Headers.Add("Accept-Language", "en-US");
             oWeb.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64)");
             oWeb.DownloadStringAsync(new Uri(strUrl));
+        }
+
+
+        public void GetImage(string strUrl, string fPath)
+        {
+            WebClient oWeb = new WebClient();
+            string imgSize = "496";
+            strUrl = strUrl.Replace("&amp;", "&");
+            strUrl = strUrl.Replace("w=124", "w=" + imgSize);
+            strUrl = strUrl.Replace("h=124", "h=" + imgSize);
+            strUrl = strUrl.Replace("w=186", "w=" + imgSize);
+            strUrl = strUrl.Replace("h=186", "h=" + imgSize);
+            strUrl = strUrl.Replace("w=248", "w=" + imgSize);
+            strUrl = strUrl.Replace("h=248", "h=" + imgSize);
+            strUrl = strUrl.Replace("w=372", "w=" + imgSize);
+            strUrl = strUrl.Replace("h=372", "h=" + imgSize);
+            oWeb.DownloadFileCompleted += DownloadFileCompleted;
+            oWeb.Headers.Add("Referer", strUrl);
+            oWeb.Headers.Add("Accept", "*/*");
+            oWeb.Headers.Add("Accept-Language", "en-US");
+            oWeb.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64)");
+            oWeb.DownloadFileAsync(new Uri(strUrl), fPath);
         }
 
 
@@ -111,6 +136,21 @@ namespace psDLC
                 DataEvent.ManifestErrorMessage = ex.Message;
                 ManifestError(this, DataEvent);
             }
-        } 
+        }
+
+
+        void DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+        {
+            PDL DataEvent = new PDL();
+            if (e.Error == null)
+            {
+                GotImage(this, DataEvent);
+            }
+            else
+            {
+                DataEvent.ImageErrorMessage = e.Error.Message;
+                ImageError(this, DataEvent);
+            }
+        }
     }
 }

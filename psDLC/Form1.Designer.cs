@@ -39,6 +39,7 @@
             this.Button2 = new System.Windows.Forms.Button();
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.Button3 = new System.Windows.Forms.Button();
+            this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SuspendLayout();
             // 
             // Button1
@@ -61,7 +62,8 @@
             this.columnHeader1,
             this.columnHeader2,
             this.columnHeader3,
-            this.columnHeader4});
+            this.columnHeader4,
+            this.columnHeader5});
             this.LV1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LV1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.LV1.FullRowSelect = true;
@@ -151,6 +153,10 @@
             this.Button3.Visible = false;
             this.Button3.Click += new System.EventHandler(this.Button3_Click);
             // 
+            // columnHeader5
+            // 
+            this.columnHeader5.Width = 0;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
@@ -186,6 +192,7 @@
         private System.Windows.Forms.Button Button2;
         private System.Windows.Forms.LinkLabel linkLabel1;
         private System.Windows.Forms.Button Button3;
+        private System.Windows.Forms.ColumnHeader columnHeader5;
     }
 }
 
