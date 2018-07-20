@@ -287,7 +287,8 @@ namespace psDLC
             tmpStr += "<volume_ts>" + gTime + "</volume_ts>";
             tmpStr += "<package content_id=\"" + CID + "\" passcode=\"00000000000000000000000000000000\"/>";
             tmpStr += "</volume>";
-            tmpStr += "<files img_no=\"0\">";
+           // tmpStr += "<files img_no=\"0\">";
+            tmpStr += "<files>";
             if (hasImage == true)
             {
                 tmpStr += "<file targ_path=\"sce_sys/icon0.png\" orig_path=\"" + cDir + "fake_dlc_temp\\sce_sys\\icon0.png\"/>";
