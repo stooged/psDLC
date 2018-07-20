@@ -282,7 +282,7 @@ namespace psDLC
             string tmpStr = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>";
             tmpStr += "<psproject fmt=\"gp4\" version=\"1000\">";
             tmpStr += "<volume>";
-            tmpStr += "<volume_type>pkg_ps4_ac_nodata</volume_type>";
+            tmpStr += "<volume_type>pkg_ps4_ac_data</volume_type>";
             tmpStr += "<volume_id>PS4VOLUME</volume_id>";
             tmpStr += "<volume_ts>" + gTime + "</volume_ts>";
             tmpStr += "<package content_id=\"" + CID + "\" passcode=\"00000000000000000000000000000000\"/>";
