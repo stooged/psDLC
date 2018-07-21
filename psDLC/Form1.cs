@@ -254,7 +254,7 @@ namespace psDLC
             File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "fake_dlc_temp/param_template.sfx", SFX(cntId, Name, Strings.Mid(TID, 1, 9)));
             File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "fake_dlc_temp/fake_dlc_project.gp4", GP4(cntId, hasImage));
             RunOrbis("sfo_create fake_dlc_temp\\param_template.sfx fake_dlc_temp\\sce_sys\\param.sfo");
-            RunOrbis("img_create " + "fake_dlc_temp\\fake_dlc_project.gp4 \"" + AppDomain.CurrentDomain.BaseDirectory + "\\fake_dlc_pkg\\" + cntId + "-A0000-V0100.pkg\"");
+            RunOrbis("img_create fake_dlc_temp\\fake_dlc_project.gp4 \"" + AppDomain.CurrentDomain.BaseDirectory + "\\fake_dlc_pkg\\" + cntId + "-A0000-V0100.pkg\"");
             Directory.Delete(AppDomain.CurrentDomain.BaseDirectory +"fake_dlc_temp", true);
         }
 
@@ -287,7 +287,6 @@ namespace psDLC
             tmpStr += "<volume_ts>" + gTime + "</volume_ts>";
             tmpStr += "<package content_id=\"" + CID + "\" passcode=\"00000000000000000000000000000000\"/>";
             tmpStr += "</volume>";
-           // tmpStr += "<files img_no=\"0\">";
             tmpStr += "<files>";
             if (hasImage == true)
             {

@@ -101,7 +101,7 @@ namespace psDLC
             }
             catch(Exception ex)
             {
-                DataEvent.DlcListErrorMessage = ex.Message;
+                DataEvent.DlcListErrorMessage = ex.InnerException.Message;
                 DlcListError(this, DataEvent);
             }
         }
@@ -117,7 +117,7 @@ namespace psDLC
             }
             catch (Exception ex)
             {
-                 DataEvent.PkgListErrorMessage = ex.Message;
+                 DataEvent.PkgListErrorMessage = ex.InnerException.Message;
                  PkgListError(this, DataEvent);
             }
         }
@@ -133,7 +133,7 @@ namespace psDLC
             }
             catch (Exception ex)
             {
-                DataEvent.ManifestErrorMessage = ex.Message;
+                DataEvent.ManifestErrorMessage = ex.InnerException.Message;
                 ManifestError(this, DataEvent);
             }
         }
@@ -148,7 +148,7 @@ namespace psDLC
             }
             else
             {
-                DataEvent.ImageErrorMessage = e.Error.Message;
+                DataEvent.ImageErrorMessage = e.Error.InnerException.Message;
                 ImageError(this, DataEvent);
             }
         }
