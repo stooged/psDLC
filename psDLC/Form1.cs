@@ -76,6 +76,7 @@ namespace psDLC
                     TmpTitle = TmpTitle.Replace("&#x2122;", "");
                     TmpTitle = TmpTitle.Replace("&#x2019;", "’");
                     TmpTitle = TmpTitle.Replace("&apos;", "'");
+                    TmpTitle = TmpTitle.Replace("&#xAE;", "");
                     TmpTitle = TmpTitle.Replace("&amp;", "&");
 
                     Spl3 = Regex.Split(Spl2[0], "a href=\"");
@@ -124,6 +125,11 @@ namespace psDLC
             TmpTitle = Strings.Trim(Spl2[0]);
             Regex rgrep = new Regex("[^ -~]+");
             TmpTitle = rgrep.Replace(TmpTitle, "");
+            TmpTitle = TmpTitle.Replace("&#x2122;", "");
+            TmpTitle = TmpTitle.Replace("&#x2019;", "’");
+            TmpTitle = TmpTitle.Replace("&apos;", "'");
+            TmpTitle = TmpTitle.Replace("&#xAE;", "");
+            TmpTitle = TmpTitle.Replace("&amp;", "&");
             Text = TmpTitle;
 
             if (ContentID.Length >= 19)
