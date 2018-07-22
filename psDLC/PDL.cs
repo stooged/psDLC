@@ -101,7 +101,14 @@ namespace psDLC
             }
             catch(Exception ex)
             {
-                DataEvent.DlcListErrorMessage = ex.InnerException.Message;
+                if (ex.InnerException != null)
+                {
+                    DataEvent.DlcListErrorMessage = ex.InnerException.Message;
+                }
+                else
+                {
+                    DataEvent.DlcListErrorMessage = ex.Message;
+                }
                 DlcListError(this, DataEvent);
             }
         }
@@ -117,7 +124,16 @@ namespace psDLC
             }
             catch (Exception ex)
             {
-                 DataEvent.PkgListErrorMessage = ex.InnerException.Message;
+
+                if (ex.InnerException != null)
+                {
+                    DataEvent.PkgListErrorMessage = ex.InnerException.Message;
+                }
+                else
+                {
+                    DataEvent.PkgListErrorMessage = ex.Message;
+                }
+
                  PkgListError(this, DataEvent);
             }
         }
@@ -133,7 +149,14 @@ namespace psDLC
             }
             catch (Exception ex)
             {
-                DataEvent.ManifestErrorMessage = ex.InnerException.Message;
+                if (ex.InnerException != null)
+                {
+                    DataEvent.ManifestErrorMessage = ex.InnerException.Message;
+                }
+                else
+                {
+                    DataEvent.ManifestErrorMessage = ex.Message;
+                }
                 ManifestError(this, DataEvent);
             }
         }
@@ -148,7 +171,14 @@ namespace psDLC
             }
             else
             {
-                DataEvent.ImageErrorMessage = e.Error.InnerException.Message;
+                if (e.Error.InnerException != null)
+                {
+                    DataEvent.ImageErrorMessage = e.Error.InnerException.Message;
+                }
+                else
+                {
+                    DataEvent.ImageErrorMessage = e.Error.Message;
+                }
                 ImageError(this, DataEvent);
             }
         }

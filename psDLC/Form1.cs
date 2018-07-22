@@ -48,115 +48,129 @@ namespace psDLC
         void GotDlcList(object sender, PDL e)
         {
             string PlData = e.DlcListData;
-            string[] Spl1, Spl2, Spl3, Spl4;
-            string TmpTitle, TmpURL, TmpImgUrl, TmpType, TmpPlatForm;
 
-            if (Strings.InStr(PlData, "paginator-control__end paginator-control__arrow-navigation internal-app-link ember-view") > 0)
+            if (Strings.InStr(PlData, "cell__title") > 0)
             {
-                pageNum = pageNum + 1;
-                htmBuffer = htmBuffer + PlData;
-                PDL1.GetDlcList(titleID, titleRgn, pageNum);
+                string[] Spl1, Spl2, Spl3, Spl4;
+                string TmpTitle, TmpURL, TmpImgUrl, TmpType, TmpPlatForm;
+
+                if (Strings.InStr(PlData, "paginator-control__end paginator-control__arrow-navigation internal-app-link ember-view") > 0)
+                {
+                    pageNum = pageNum + 1;
+                    htmBuffer = htmBuffer + PlData;
+                    PDL1.GetDlcList(titleID, titleRgn, pageNum);
+                }
+                else
+                {
+                    htmBuffer = htmBuffer + PlData;
+                    LV1.BeginUpdate();
+                    LV1.Items.Clear();
+
+                    Spl1 = Regex.Split(htmBuffer, "desktop-presentation__grid-cell__base");
+
+                    for (int i = 1; i < Information.UBound(Spl1) + 1; i++)
+                    {
+
+                        Spl2 = Regex.Split(Spl1[i], "grid-cell__footer");
+
+                        Spl3 = Regex.Split(Spl2[0], "class=\"grid-cell__title\">");
+                        Spl4 = Regex.Split(Spl3[1], "<");
+                        TmpTitle = Strings.Trim(Spl4[0]);
+                        TmpTitle = TmpTitle.Replace("&#x2122;", "");
+                        TmpTitle = TmpTitle.Replace("&#x2019;", "’");
+                        TmpTitle = TmpTitle.Replace("&apos;", "'");
+                        TmpTitle = TmpTitle.Replace("&#xAE;", "");
+                        TmpTitle = TmpTitle.Replace("&amp;", "&");
+
+                        Spl3 = Regex.Split(Spl2[0], "a href=\"");
+                        Spl4 = Regex.Split(Spl3[1], "\"");
+                        TmpURL = "https://store.playstation.com" + Strings.Trim(Spl4[0]);
+
+                        Spl3 = Regex.Split(Spl2[0], "img src=\"http");
+                        Spl4 = Regex.Split(Spl3[1], "\"");
+                        TmpImgUrl = "http" + Strings.Trim(Spl4[0]);
+
+                        Spl3 = Regex.Split(Spl2[0], "left-detail--detail-2\">");
+                        Spl4 = Regex.Split(Spl3[1], "<");
+                        TmpType = Strings.Trim(Spl4[0]);
+
+                        Spl3 = Regex.Split(Spl2[0], "left-detail--detail-1\">");
+                        Spl4 = Regex.Split(Spl3[1], "<");
+                        TmpPlatForm = Strings.Trim(Spl4[0]);
+
+                        string[] TmpItem = { TmpTitle, TmpType, TmpPlatForm, TmpURL, TmpImgUrl };
+                        var LvItem = new ListViewItem(TmpItem);
+                        LV1.Items.Add(LvItem);
+
+                    }
+                    LV1.EndUpdate();
+                }
             }
             else
             {
-                htmBuffer = htmBuffer + PlData;
-                LV1.BeginUpdate();
-                LV1.Items.Clear();
-
-                Spl1 = Regex.Split(htmBuffer, "desktop-presentation__grid-cell__base");
-
-                for (int i = 1; i < Information.UBound(Spl1) + 1; i++)
-                {
-
-                    Spl2 = Regex.Split(Spl1[i], "grid-cell__footer");
-
-                    Spl3 = Regex.Split(Spl2[0], "class=\"grid-cell__title\">");
-                    Spl4 = Regex.Split(Spl3[1], "<");
-                    TmpTitle = Strings.Trim(Spl4[0]);
-                    TmpTitle = TmpTitle.Replace("&#x2122;", "");
-                    TmpTitle = TmpTitle.Replace("&#x2019;", "’");
-                    TmpTitle = TmpTitle.Replace("&apos;", "'");
-                    TmpTitle = TmpTitle.Replace("&#xAE;", "");
-                    TmpTitle = TmpTitle.Replace("&amp;", "&");
-
-                    Spl3 = Regex.Split(Spl2[0], "a href=\"");
-                    Spl4 = Regex.Split(Spl3[1], "\"");
-                    TmpURL = "https://store.playstation.com" + Strings.Trim(Spl4[0]);
-
-                    Spl3 = Regex.Split(Spl2[0], "img src=\"http");
-                    Spl4 = Regex.Split(Spl3[1], "\"");
-                    TmpImgUrl = "http" + Strings.Trim(Spl4[0]);
-
-                    Spl3 = Regex.Split(Spl2[0], "left-detail--detail-2\">");
-                    Spl4 = Regex.Split(Spl3[1], "<");
-                    TmpType = Strings.Trim(Spl4[0]);
-
-                    Spl3 = Regex.Split(Spl2[0], "left-detail--detail-1\">");
-                    Spl4 = Regex.Split(Spl3[1], "<");
-                    TmpPlatForm = Strings.Trim(Spl4[0]);
-
-                    string[] TmpItem = { TmpTitle, TmpType, TmpPlatForm, TmpURL, TmpImgUrl };
-                    var LvItem = new ListViewItem(TmpItem);
-                    LV1.Items.Add(LvItem);
-
-                }
-
-                LV1.EndUpdate();
-
+                OrbisLog("ERROR: No HTML content found.");
             }
         }
 
 
         void GotPkgList(object sender, PDL e)
         {
-            string PlData = e.PkgListData, ContentID, TmpTitle; ;
-            string[] Spl1, Spl2;
-
-            Spl1 = Regex.Split(PlData, "content_id=\"");
-            Spl2 = Regex.Split(Spl1[1], "\"");
-            ContentID = Strings.Trim(Spl2[0]);
-
-            Spl1 = Regex.Split(PlData, "manifest_url=\"");
-            Spl2 = Regex.Split(Spl1[1], "\"");
-            selManifest = Strings.Trim(Spl2[0]);
-
-            Spl1 = Regex.Split(PlData, "<title>");
-            Spl2 = Regex.Split(Spl1[1], "</title>");
-            TmpTitle = Strings.Trim(Spl2[0]);
-            Regex rgrep = new Regex("[^ -~]+");
-            TmpTitle = rgrep.Replace(TmpTitle, "");
-            TmpTitle = TmpTitle.Replace("&#x2122;", "");
-            TmpTitle = TmpTitle.Replace("&#x2019;", "’");
-            TmpTitle = TmpTitle.Replace("&apos;", "'");
-            TmpTitle = TmpTitle.Replace("&#xAE;", "");
-            TmpTitle = TmpTitle.Replace("&amp;", "&");
-            Text = TmpTitle;
-
-            if (ContentID.Length >= 19)
+            string PlData = e.PkgListData;
+            if (Strings.InStr(PlData, "titleid=") > 0)
             {
-                Button3.Visible = true;
-                pageNum = 1;
-                htmBuffer = string.Empty;
-                titleID = Strings.Mid(ContentID, 8, 12);
+                string ContentID, TmpTitle; ;
+                string[] Spl1, Spl2;
 
-                switch (Strings.Mid(ContentID, 1, 1))
+                Spl1 = Regex.Split(PlData, "content_id=\"");
+                Spl2 = Regex.Split(Spl1[1], "\"");
+                ContentID = Strings.Trim(Spl2[0]);
+
+                Spl1 = Regex.Split(PlData, "manifest_url=\"");
+                Spl2 = Regex.Split(Spl1[1], "\"");
+                selManifest = Strings.Trim(Spl2[0]);
+
+                Spl1 = Regex.Split(PlData, "<title>");
+                Spl2 = Regex.Split(Spl1[1], "</title>");
+                TmpTitle = Strings.Trim(Spl2[0]);
+                Regex rgrep = new Regex("[^ -~]+");
+                TmpTitle = rgrep.Replace(TmpTitle, "");
+                TmpTitle = TmpTitle.Replace("&#x2122;", "");
+                TmpTitle = TmpTitle.Replace("&#x2019;", "’");
+                TmpTitle = TmpTitle.Replace("&apos;", "'");
+                TmpTitle = TmpTitle.Replace("&#xAE;", "");
+                TmpTitle = TmpTitle.Replace("&amp;", "&");
+                Text = TmpTitle;
+
+                if (ContentID.Length >= 19)
                 {
-                    case "U":
-                        titleRgn = "en-us";
-                        break;
-                    case "E":
-                        titleRgn = "en-gb";
-                        break;
-                    default:
-                        titleRgn = "ja-jp";
-                        break;
-                }
+                    Button3.Visible = true;
+                    pageNum = 1;
+                    htmBuffer = string.Empty;
+                    titleID = Strings.Mid(ContentID, 8, 12);
 
-                PDL1.GetDlcList(titleID, titleRgn, pageNum);
+                    switch (Strings.Mid(ContentID, 1, 1))
+                    {
+                        case "U":
+                            titleRgn = "en-us";
+                            break;
+                        case "E":
+                            titleRgn = "en-gb";
+                            break;
+                        default:
+                            titleRgn = "ja-jp";
+                            break;
+                    }
+
+                    PDL1.GetDlcList(titleID, titleRgn, pageNum);
+                }
+                else
+                {
+                    OrbisLog("ERROR: Invalid Content ID" + Environment.NewLine + "Failed to load content id for " + textBox1.Text);
+                }
             }
             else
             {
-                OrbisLog("ERROR: Invalid Content ID" + Environment.NewLine + "Failed to load content id for " + textBox1.Text);
+                OrbisLog("ERROR: No XML content found.");
             }
         }
 
@@ -209,19 +223,42 @@ namespace psDLC
         {
             if (textHint == false)
             {
+                LV1.Items.Clear();
                 textBox2.Clear();
                 Button2.Visible = false;
                 Button3.Visible = false;
                 linkLabel1.Text = "";
                 Text = "psDLC";
                 textBox1.Text = textBox1.Text.ToUpper();
+                textBox1.SelectionStart = textBox1.Text.Length;
+                textBox1.SelectionLength = 0;
+
                 if (textBox1.Text.Length == 9)
                 {
                     PDL1.GetPkgList(textBox1.Text);
                 }
+                else if (textBox1.Text.Length >= 19)
+                {
+                    pageNum = 1;
+                    htmBuffer = string.Empty;
+                    titleID = Strings.Mid(textBox1.Text, 8, 12);
+                    switch (Strings.Mid(textBox1.Text, 1, 1))
+                    {
+                        case "U":
+                            titleRgn = "en-us";
+                            break;
+                        case "E":
+                            titleRgn = "en-gb";
+                            break;
+                        default:
+                            titleRgn = "ja-jp";
+                            break;
+                    }
+                    PDL1.GetDlcList(titleID, titleRgn, pageNum);
+                }
                 else
                 {
-                    OrbisLog("ERROR: Invalid Content ID" + Environment.NewLine + "Use the content id in the following format CUSA00000");
+                    OrbisLog("ERROR: Invalid Content ID" + Environment.NewLine + "Use the content id in the following format CUSA00000 or XX0000-CUSA00000_00-0000000000000000");
                 }
             }
         }
@@ -319,6 +356,16 @@ namespace psDLC
         }
 
 
+        private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == 13)
+            {
+                Button1.PerformClick();
+                e.Handled = true;
+            }
+        }
+
+
         private void textBox1_Leave(object sender, EventArgs e)
         {
             if (!textHint && string.IsNullOrEmpty(textBox1.Text))
@@ -409,7 +456,5 @@ namespace psDLC
                 textBox2.AppendText(strText + Environment.NewLine);
             }
         }
- 
-
     }
 }

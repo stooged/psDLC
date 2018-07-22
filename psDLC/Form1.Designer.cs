@@ -34,19 +34,19 @@
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.Button2 = new System.Windows.Forms.Button();
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.Button3 = new System.Windows.Forms.Button();
-            this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SuspendLayout();
             // 
             // Button1
             // 
             this.Button1.AutoSize = true;
             this.Button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.142858F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Button1.Location = new System.Drawing.Point(224, 27);
+            this.Button1.Location = new System.Drawing.Point(607, 30);
             this.Button1.Name = "Button1";
             this.Button1.Size = new System.Drawing.Size(201, 39);
             this.Button1.TabIndex = 0;
@@ -97,16 +97,21 @@
             // 
             this.columnHeader4.Width = 0;
             // 
+            // columnHeader5
+            // 
+            this.columnHeader5.Width = 0;
+            // 
             // textBox1
             // 
             this.textBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.857143F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBox1.Location = new System.Drawing.Point(15, 30);
-            this.textBox1.MaxLength = 9;
+            this.textBox1.MaxLength = 36;
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(190, 34);
+            this.textBox1.Size = new System.Drawing.Size(586, 34);
             this.textBox1.TabIndex = 4;
             this.textBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.textBox1.Enter += new System.EventHandler(this.textBox1_Enter);
+            this.textBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox1_KeyPress);
             this.textBox1.Leave += new System.EventHandler(this.textBox1_Leave);
             // 
             // textBox2
@@ -144,7 +149,7 @@
             // 
             this.Button3.AutoSize = true;
             this.Button3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.142858F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Button3.Location = new System.Drawing.Point(1084, 31);
+            this.Button3.Location = new System.Drawing.Point(1079, 30);
             this.Button3.Name = "Button3";
             this.Button3.Size = new System.Drawing.Size(215, 39);
             this.Button3.TabIndex = 8;
@@ -152,10 +157,6 @@
             this.Button3.UseVisualStyleBackColor = true;
             this.Button3.Visible = false;
             this.Button3.Click += new System.EventHandler(this.Button3_Click);
-            // 
-            // columnHeader5
-            // 
-            this.columnHeader5.Width = 0;
             // 
             // Form1
             // 
