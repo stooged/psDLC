@@ -36,6 +36,31 @@ namespace psDLC
             textHint = true;
             textBox1.ForeColor = Color.Gray;
             textBox1.Text = "CUSA00000";
+            ScaleForm();
+        }
+
+
+        private void Form1_Resize(object sender, EventArgs e)
+        {
+            if (WindowState == FormWindowState.Normal)
+            {
+                ScaleForm();
+            }
+        }
+
+
+        void ScaleForm()
+        {
+            textBox1.Width = Width - Button1.Width - Button3.Width - 100;
+            Button1.Left = textBox1.Right + 3;
+            LV1.Width = Width - 33;
+            LV1.Height = Height - textBox2.Height - 125;
+            Button2.Top = LV1.Bottom + 5;
+            linkLabel1.Top = LV1.Bottom + 10;
+            Button2.Left = LV1.Right - Button2.Width;
+            Button3.Left = LV1.Right - Button3.Width;
+            textBox2.Top = Button2.Bottom + 8;
+            textBox2.Width = Width - 33;
         }
 
 
