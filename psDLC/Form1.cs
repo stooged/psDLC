@@ -50,6 +50,7 @@ namespace psDLC
             checkBox10.Checked = settings.GetSetting("check10", true);
             checkBox11.Checked = settings.GetSetting("check11", true);
             checkBox12.Checked = settings.GetSetting("check12", true);
+            checkBox13.Checked = settings.GetSetting("check13", false);
             ScaleForm();
         }
 
@@ -387,15 +388,24 @@ namespace psDLC
             string tmpStr = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>";
             tmpStr += "<psproject fmt=\"gp4\" version=\"1000\">";
             tmpStr += "<volume>";
-            tmpStr += "<volume_type>pkg_ps4_ac_data</volume_type>";
-            tmpStr += "<volume_id>PS4VOLUME</volume_id>";
-            tmpStr += "<volume_ts>" + gTime + "</volume_ts>";
-            tmpStr += "<package content_id=\"" + CID + "\" passcode=\"00000000000000000000000000000000\"/>";
-            tmpStr += "</volume>";
-            tmpStr += "<files>";
-            if (hasImage == true)
+            if (hasImage == true && settings.GetSetting("check13", false) == false)
             {
+                tmpStr += "<volume_type>pkg_ps4_ac_data</volume_type>";
+                tmpStr += "<volume_id>PS4VOLUME</volume_id>";
+                tmpStr += "<volume_ts>" + gTime + "</volume_ts>";
+                tmpStr += "<package content_id=\"" + CID + "\" passcode=\"00000000000000000000000000000000\"/>";
+                tmpStr += "</volume>";
+                tmpStr += "<files>";
                 tmpStr += "<file targ_path=\"sce_sys/icon0.png\" orig_path=\"" + cDir + "fake_dlc_temp\\sce_sys\\icon0.png\"/>";
+            }
+            else
+            {
+                tmpStr += "<volume_type>pkg_ps4_ac_nodata</volume_type>";
+                tmpStr += "<volume_id>PS4VOLUME</volume_id>";
+                tmpStr += "<volume_ts>" + gTime + "</volume_ts>";
+                tmpStr += "<package content_id=\"" + CID + "\" passcode=\"00000000000000000000000000000000\"/>";
+                tmpStr += "</volume>";
+                tmpStr += "<files img_no=\"0\">";
             }
             tmpStr += "<file targ_path=\"sce_sys/param.sfo\" orig_path=\"" + cDir + "fake_dlc_temp\\sce_sys\\param.sfo\"/>";
             tmpStr += "</files>";
@@ -580,6 +590,10 @@ namespace psDLC
             settings.SaveSetting("check12", checkBox12.Checked);
         }
 
+        private void checkBox13_CheckedChanged(object sender, EventArgs e)
+        {
+            settings.SaveSetting("check13", checkBox13.Checked);
+        }
 
         bool isAllowed(string cType)
         {

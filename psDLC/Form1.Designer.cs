@@ -42,6 +42,7 @@
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.Button3 = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.label2 = new System.Windows.Forms.Label();
             this.button4 = new System.Windows.Forms.Button();
             this.checkBox12 = new System.Windows.Forms.CheckBox();
             this.checkBox11 = new System.Windows.Forms.CheckBox();
@@ -56,7 +57,8 @@
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
+            this.checkBox13 = new System.Windows.Forms.CheckBox();
+            this.label3 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -178,6 +180,8 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.label3);
+            this.panel1.Controls.Add(this.checkBox13);
             this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.button4);
             this.panel1.Controls.Add(this.checkBox12);
@@ -198,9 +202,18 @@
             this.panel1.TabIndex = 10;
             this.panel1.Visible = false;
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(15, 25);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(285, 25);
+            this.label2.TabIndex = 25;
+            this.label2.Text = "Types of DLC to show in the list";
+            // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(301, 282);
+            this.button4.Location = new System.Drawing.Point(301, 366);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(93, 39);
             this.button4.TabIndex = 24;
@@ -364,14 +377,26 @@
             this.label1.Text = "Settings";
             this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
-            // label2
+            // checkBox13
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(15, 25);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(285, 25);
-            this.label2.TabIndex = 25;
-            this.label2.Text = "Types of DLC to show in the list";
+            this.checkBox13.AutoSize = true;
+            this.checkBox13.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.142858F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBox13.Location = new System.Drawing.Point(38, 331);
+            this.checkBox13.Name = "checkBox13";
+            this.checkBox13.Size = new System.Drawing.Size(263, 29);
+            this.checkBox13.TabIndex = 26;
+            this.checkBox13.Text = "Use NODATA Package";
+            this.checkBox13.UseVisualStyleBackColor = true;
+            this.checkBox13.CheckedChanged += new System.EventHandler(this.checkBox13_CheckedChanged);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(17, 294);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(131, 25);
+            this.label3.TabIndex = 27;
+            this.label3.Text = "Package type";
             // 
             // Form1
             // 
@@ -430,6 +455,8 @@
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.CheckBox checkBox13;
+        private System.Windows.Forms.Label label3;
     }
 }
 
