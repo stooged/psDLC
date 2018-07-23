@@ -12,7 +12,9 @@ namespace psDLC
     public partial class Form1 : Form
     {
 
-        PDL PDL1 = new PDL();
+        private PDL PDL1 = new PDL();
+        private Settings settings = new Settings();
+
         int pageNum;
         String htmBuffer, titleID, titleRgn, selName, selCid, selManifest, selImg;
         Boolean textHint;
@@ -36,6 +38,18 @@ namespace psDLC
             textHint = true;
             textBox1.ForeColor = Color.Gray;
             textBox1.Text = "CUSA00000";
+            checkBox1.Checked = settings.GetSetting("check1", true);
+            checkBox2.Checked = settings.GetSetting("check2", true);
+            checkBox3.Checked = settings.GetSetting("check3", true);
+            checkBox4.Checked = settings.GetSetting("check4", true);
+            checkBox5.Checked = settings.GetSetting("check5", true);
+            checkBox6.Checked = settings.GetSetting("check6", true);
+            checkBox7.Checked = settings.GetSetting("check7", true);
+            checkBox8.Checked = settings.GetSetting("check8", true);
+            checkBox9.Checked = settings.GetSetting("check9", true);
+            checkBox10.Checked = settings.GetSetting("check10", true);
+            checkBox11.Checked = settings.GetSetting("check11", true);
+            checkBox12.Checked = settings.GetSetting("check12", true);
             ScaleForm();
         }
 
@@ -54,7 +68,9 @@ namespace psDLC
             textBox1.Width = Width - Button1.Width - Button3.Width - 100;
             Button1.Left = textBox1.Right + 3;
             LV1.Width = Width - 33;
-            LV1.Height = Height - textBox2.Height - 125;
+            LV1.Height = Height - textBox2.Height - 135;
+            panel1.Width = LV1.Width;
+            panel1.Height = LV1.Height;
             Button2.Top = LV1.Bottom + 5;
             linkLabel1.Top = LV1.Bottom + 10;
             Button2.Left = LV1.Right - Button2.Width;
@@ -123,9 +139,12 @@ namespace psDLC
                         Spl4 = Regex.Split(Spl3[1], "<");
                         TmpPlatForm = Strings.Trim(Spl4[0]);
 
-                        string[] TmpItem = { TmpTitle, TmpType, TmpPlatForm, TmpURL, TmpImgUrl };
-                        var LvItem = new ListViewItem(TmpItem);
-                        LV1.Items.Add(LvItem);
+                        if (isAllowed(TmpType))
+                        {
+                            string[] TmpItem = { TmpTitle, TmpType, TmpPlatForm, TmpURL, TmpImgUrl };
+                            var LvItem = new ListViewItem(TmpItem);
+                            LV1.Items.Add(LvItem);
+                        }
 
                     }
                     LV1.EndUpdate();
@@ -180,6 +199,9 @@ namespace psDLC
                             break;
                         case "E":
                             titleRgn = "en-gb";
+                            break;
+                        case "I":
+                            titleRgn = "en-us";
                             break;
                         default:
                             titleRgn = "ja-jp";
@@ -275,6 +297,9 @@ namespace psDLC
                         case "E":
                             titleRgn = "en-gb";
                             break;
+                        case "I":
+                            titleRgn = "en-us";
+                            break;
                         default:
                             titleRgn = "ja-jp";
                             break;
@@ -310,6 +335,18 @@ namespace psDLC
         {
             textBox2.Clear();
             PDL1.GetManifest(selManifest);
+        }
+
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            panel1.Visible = false;
+        }
+
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+            panel1.Visible = true;
         }
 
 
@@ -480,6 +517,121 @@ namespace psDLC
             {
                 textBox2.AppendText(strText + Environment.NewLine);
             }
+        }
+
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            settings.SaveSetting("check1", checkBox1.Checked);
+        }
+
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            settings.SaveSetting("check2", checkBox2.Checked);
+        }
+
+        private void checkBox3_CheckedChanged(object sender, EventArgs e)
+        {
+            settings.SaveSetting("check3", checkBox3.Checked);
+        }
+
+        private void checkBox4_CheckedChanged(object sender, EventArgs e)
+        {
+            settings.SaveSetting("check4", checkBox4.Checked);
+        }
+
+        private void checkBox5_CheckedChanged(object sender, EventArgs e)
+        {
+            settings.SaveSetting("check5", checkBox5.Checked);
+        }
+
+        private void checkBox6_CheckedChanged(object sender, EventArgs e)
+        {
+            settings.SaveSetting("check6", checkBox6.Checked);
+        }
+
+        private void checkBox7_CheckedChanged(object sender, EventArgs e)
+        {
+            settings.SaveSetting("check7", checkBox7.Checked);
+        }
+
+        private void checkBox8_CheckedChanged(object sender, EventArgs e)
+        {
+            settings.SaveSetting("check8", checkBox8.Checked);
+        }
+
+        private void checkBox9_CheckedChanged(object sender, EventArgs e)
+        {
+            settings.SaveSetting("check9", checkBox9.Checked);
+        }
+
+        private void checkBox10_CheckedChanged(object sender, EventArgs e)
+        {
+            settings.SaveSetting("check10", checkBox10.Checked);
+        }
+
+        private void checkBox11_CheckedChanged(object sender, EventArgs e)
+        {
+            settings.SaveSetting("check11", checkBox11.Checked);
+        }
+
+        private void checkBox12_CheckedChanged(object sender, EventArgs e)
+        {
+            settings.SaveSetting("check12", checkBox12.Checked);
+        }
+
+
+        bool isAllowed(string cType)
+        {
+            switch (cType.ToLower())
+            {
+                case "add-on":
+                    if (settings.GetSetting("check1", true) != true) return false;
+                    break;
+                case "game video":
+                    if (settings.GetSetting("check2", true) != true) return false;
+                    break;
+                case "vehicle":
+                    if (settings.GetSetting("check3", true) != true) return false;
+                    break;
+                case "map":
+                    if (settings.GetSetting("check4", true) != true) return false;
+                    break;
+                case "bundle":
+                    if (settings.GetSetting("check5", true) != true) return false;
+                    break;
+                case "full game":
+                    if (settings.GetSetting("check6", true) != true) return false;
+                    break;
+                case "avatar":
+                    if (settings.GetSetting("check7", true) != true) return false;
+                    break;
+                case "avatars":
+                    if (settings.GetSetting("check7", true) != true) return false;
+                    break;
+                case "theme":
+                    if (settings.GetSetting("check8", true) != true) return false;
+                    break;
+                case "static theme":
+                    if (settings.GetSetting("check8", true) != true) return false;
+                    break;
+                case "dynamic theme":
+                    if (settings.GetSetting("check8", true) != true) return false;
+                    break;
+                case "season pass":
+                    if (settings.GetSetting("check9", true) != true) return false;
+                    break;
+                case "level":
+                    if (settings.GetSetting("check10", true) != true) return false;
+                    break;
+                case "character":
+                    if (settings.GetSetting("check11", true) != true) return false;
+                    break;
+                default:
+                    if (settings.GetSetting("check12", true) !=true) return false;
+                    break;
+            }
+            return true;
         }
     }
 }
