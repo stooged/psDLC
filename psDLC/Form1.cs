@@ -73,10 +73,13 @@ namespace psDLC
             Button1.Left = textBox1.Right + 3;
             LV1.Width = Width - 33;
             LV1.Height = Height - textBox2.Height - 135;
+
             panel1.Width = LV1.Width;
-            panel1.Height = LV1.Height;
+            panel1.Height = Height - label1.Height - 60;
             panel2.Width = LV1.Width;
             panel2.Height = LV1.Height + 30;
+
+
             label8.Left = panel2.Width - label8.Width;
             label4.Width = panel2.Width - pictureBox1.Width - 16;
             label4.Height = panel2.Height - label8.Height;
@@ -384,6 +387,7 @@ namespace psDLC
 
         private void Button2_Click(object sender, EventArgs e)
         {
+            panel2.Visible = false;
             textBox2.Clear();
             Button2.Visible = false;
             if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "orbis-pub-cmd.exe"))
@@ -414,7 +418,14 @@ namespace psDLC
 
         private void label1_Click(object sender, EventArgs e)
         {
-            panel1.Visible = true;
+            if (panel1.Visible == true)
+            {
+                panel1.Visible = false;
+            }
+            else
+            {
+                panel1.Visible = true;
+            }
         }
 
 

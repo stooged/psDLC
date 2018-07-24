@@ -42,6 +42,7 @@
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.Button3 = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.label9 = new System.Windows.Forms.Label();
             this.checkBox14 = new System.Windows.Forms.CheckBox();
             this.label3 = new System.Windows.Forms.Label();
             this.checkBox13 = new System.Windows.Forms.CheckBox();
@@ -67,7 +68,6 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.label9 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -191,6 +191,7 @@
             // 
             // panel1
             // 
+            this.panel1.BackColor = System.Drawing.SystemColors.Control;
             this.panel1.Controls.Add(this.label9);
             this.panel1.Controls.Add(this.checkBox14);
             this.panel1.Controls.Add(this.label3);
@@ -209,11 +210,20 @@
             this.panel1.Controls.Add(this.checkBox3);
             this.panel1.Controls.Add(this.checkBox2);
             this.panel1.Controls.Add(this.checkBox1);
-            this.panel1.Location = new System.Drawing.Point(15, 96);
+            this.panel1.Location = new System.Drawing.Point(15, 48);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(406, 475);
             this.panel1.TabIndex = 10;
             this.panel1.Visible = false;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(17, 388);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(31, 25);
+            this.label9.TabIndex = 29;
+            this.label9.Text = "UI";
             // 
             // checkBox14
             // 
@@ -495,23 +505,14 @@
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(17, 388);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(31, 25);
-            this.label9.TabIndex = 29;
-            this.label9.Text = "UI";
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1312, 947);
+            this.Controls.Add(this.panel1);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.panel1);
             this.Controls.Add(this.Button3);
             this.Controls.Add(this.Button2);
             this.Controls.Add(this.textBox2);
