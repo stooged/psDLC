@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
@@ -73,13 +74,10 @@ namespace psDLC
             Button1.Left = textBox1.Right + 3;
             LV1.Width = Width - 33;
             LV1.Height = Height - textBox2.Height - 135;
-
             panel1.Width = LV1.Width;
             panel1.Height = Height - label1.Height - 60;
             panel2.Width = LV1.Width;
             panel2.Height = LV1.Height + 30;
-
-
             label8.Left = panel2.Width - label8.Width;
             label4.Width = panel2.Width - pictureBox1.Width - 16;
             label4.Height = panel2.Height - label8.Height;
@@ -129,11 +127,7 @@ namespace psDLC
                         Spl3 = Regex.Split(Spl2[0], "class=\"grid-cell__title\">");
                         Spl4 = Regex.Split(Spl3[1], "<");
                         TmpTitle = Strings.Trim(Spl4[0]);
-                        TmpTitle = TmpTitle.Replace("&#x2122;", "");
-                        TmpTitle = TmpTitle.Replace("&#x2019;", "’");
-                        TmpTitle = TmpTitle.Replace("&apos;", "'");
-                        TmpTitle = TmpTitle.Replace("&#xAE;", "");
-                        TmpTitle = TmpTitle.Replace("&amp;", "&");
+                        TmpTitle = WebUtility.HtmlDecode(TmpTitle);
 
                         Spl3 = Regex.Split(Spl2[0], "a href=\"");
                         Spl4 = Regex.Split(Spl3[1], "\"");
@@ -146,10 +140,12 @@ namespace psDLC
                         Spl3 = Regex.Split(Spl2[0], "left-detail--detail-2\">");
                         Spl4 = Regex.Split(Spl3[1], "<");
                         TmpType = Strings.Trim(Spl4[0]);
+                        TmpType = WebUtility.HtmlDecode(TmpType);
 
                         Spl3 = Regex.Split(Spl2[0], "left-detail--detail-1\">");
                         Spl4 = Regex.Split(Spl3[1], "<");
                         TmpPlatForm = Strings.Trim(Spl4[0]);
+                        TmpPlatForm = WebUtility.HtmlDecode(TmpPlatForm);
 
                         if (isAllowed(TmpType))
                         {
@@ -188,13 +184,10 @@ namespace psDLC
                 Spl1 = Regex.Split(PlData, "<title>");
                 Spl2 = Regex.Split(Spl1[1], "</title>");
                 TmpTitle = Strings.Trim(Spl2[0]);
+                TmpTitle = WebUtility.HtmlDecode(TmpTitle);
                 Regex rgrep = new Regex("[^ -~]+");
                 TmpTitle = rgrep.Replace(TmpTitle, "");
-                TmpTitle = TmpTitle.Replace("&#x2122;", "");
-                TmpTitle = TmpTitle.Replace("&#x2019;", "’");
-                TmpTitle = TmpTitle.Replace("&apos;", "'");
-                TmpTitle = TmpTitle.Replace("&#xAE;", "");
-                TmpTitle = TmpTitle.Replace("&amp;", "&");
+
                 Text = TmpTitle;
 
                 if (ContentID.Length >= 19)
@@ -268,6 +261,7 @@ namespace psDLC
             Spl1 = Regex.Split(PlData, "\"long-description\":\"");
             Spl2 = Regex.Split(Spl1[1], "\"");
             dlcDesc = Strings.Trim(Spl2[0]);
+            dlcDesc = WebUtility.HtmlDecode(dlcDesc);
             dlcDesc = Regex.Replace(dlcDesc, "[^a-zA-Z0-9 -<>&,]", "");
 
             Spl1 = Regex.Split(PlData, "\"file-size\":{");
@@ -278,10 +272,12 @@ namespace psDLC
             fsUnit = Strings.Trim(Spl2[0]);
             Spl1 = Regex.Split(fsData, "\"value\":");
             fsValue = Strings.Trim(Spl1[1]);
+            fsUnit = WebUtility.HtmlDecode(fsUnit);
 
             Spl1 = Regex.Split(PlData, "\"game-content-type\":\"");
             Spl2 = Regex.Split(Spl1[1], "\"");
             dlcType = Strings.Trim(Spl2[0]);
+            dlcType = WebUtility.HtmlDecode(dlcType);
 
             Spl1 = Regex.Split(PlData, "\"thumbnail-url-base\":\"");
             Spl2 = Regex.Split(Spl1[1], "\"");
@@ -290,6 +286,7 @@ namespace psDLC
             Spl1 = Regex.Split(PlData, "\"platforms\":\\[");
             Spl2 = Regex.Split(Spl1[1], "\\]");
             dlcPlatfrm = Strings.Trim(Spl2[0]);
+            dlcPlatfrm = WebUtility.HtmlDecode(dlcPlatfrm);
 
             pictureBox1.ImageLocation = dlcImgUrl;
             pictureBox1.LoadAsync();
@@ -346,17 +343,30 @@ namespace psDLC
                 Button2.Visible = false;
                 Button3.Visible = false;
                 linkLabel1.Text = "";
-                Text = "psDLC";
-                textBox1.Text = textBox1.Text.ToUpper();
+                Text = "psDLC";  
                 textBox1.SelectionStart = textBox1.Text.Length;
                 textBox1.SelectionLength = 0;
 
-                if (textBox1.Text.Length == 9)
+                if (textBox1.Text.Length == 9 && textBox1.Text.ToLower().Contains("cusa"))
                 {
+                    textBox1.Text = textBox1.Text.ToUpper();
                     PDL1.GetPkgList(textBox1.Text);
                 }
-                else if (textBox1.Text.Length >= 19)
+                else if (textBox1.Text.StartsWith("http") && textBox1.Text.Contains(".com/") && textBox1.Text.Contains("/product/") && textBox1.Text.ToLower().Contains("cusa") && textBox1.Text.Length > 36)
                 {
+                    pageNum = 1;
+                    htmBuffer = string.Empty;
+                    string[] Spl1, Spl2;
+                    Spl1 = Regex.Split(textBox1.Text, ".com/");
+                    Spl2 = Regex.Split(Spl1[1], "/");
+                    titleRgn = Spl2[0];
+                    Spl1 = Regex.Split(textBox1.Text, "/product/");
+                    titleID = Strings.Mid(Spl1[1], 8, 12);
+                    PDL1.GetDlcList(titleID, titleRgn, pageNum); 
+                }
+                else if (textBox1.Text.Length >= 19 && textBox1.Text.ToLower().Contains("cusa"))
+                {
+                    textBox1.Text = textBox1.Text.ToUpper();
                     pageNum = 1;
                     htmBuffer = string.Empty;
                     titleID = Strings.Mid(textBox1.Text, 8, 12);
@@ -379,7 +389,7 @@ namespace psDLC
                 }
                 else
                 {
-                    AppLog("ERROR: Invalid Content ID" + Environment.NewLine + "Use the content id in the following format CUSA00000 or XX0000-CUSA00000_00-0000000000000000");
+                    AppLog("ERROR: Invalid Content ID" + Environment.NewLine + "Use the content id in the following formats:\r\n CUSA00000 \r\nor\r\n XX0000-CUSA00000_00-0000000000000000 \r\nor\r\n PS Store URL: https://store.playstation.com/xx-xx/product/XX0000-CUSA00000_00-0000000000000000");
                 }
             }
         }
@@ -388,6 +398,11 @@ namespace psDLC
         private void Button2_Click(object sender, EventArgs e)
         {
             panel2.Visible = false;
+            label4.Text = "";
+            label5.Text = "";
+            label6.Text = "";
+            label7.Text = "";
+            pictureBox1.Image = null;
             textBox2.Clear();
             Button2.Visible = false;
             if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "orbis-pub-cmd.exe"))
@@ -424,8 +439,29 @@ namespace psDLC
             }
             else
             {
-                panel1.Visible = true;
+                panel1.BringToFront();
+                panel1.Visible = true; 
             }
+        }
+
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (linkLabel1.Text.Length > 6)
+            {
+                Process.Start(linkLabel1.Text);
+            }
+        }
+
+
+        private void label8_Click(object sender, EventArgs e)
+        {
+            panel2.Visible = false;
+            label4.Text = "";
+            label5.Text = "";
+            label6.Text = "";
+            label7.Text = "";
+            pictureBox1.Image = null;
         }
 
 
@@ -524,26 +560,6 @@ namespace psDLC
                 textBox1.Text = "CUSA00000";
                 textBox1.ForeColor = Color.Gray;
             }
-        }
-
-
-        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            if (linkLabel1.Text.Length > 6)
-            {
-                Process.Start(linkLabel1.Text);
-            }
-        }
-
-
-        private void label8_Click(object sender, EventArgs e)
-        {
-            panel2.Visible = false;
-            label4.Text = "";
-            label5.Text = "";
-            label6.Text = "";
-            label7.Text = "";
-            pictureBox1.Image = null;
         }
 
 
