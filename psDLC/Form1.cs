@@ -33,6 +33,8 @@ namespace psDLC
             PDL1.PkgListError += PkgListError;
             PDL1.GotManifest += GotManifest;
             PDL1.ManifestError += ManifestError;
+            PDL1.GotDlcInfo += GotDlcInfo;
+            PDL1.DlcInfoError += DlcInfoError;
             PDL1.GotImage += GotImage;
             PDL1.ImageError += ImageError;
             textHint = true;
@@ -51,6 +53,7 @@ namespace psDLC
             checkBox11.Checked = settings.GetSetting("check11", true);
             checkBox12.Checked = settings.GetSetting("check12", true);
             checkBox13.Checked = settings.GetSetting("check13", false);
+            checkBox14.Checked = settings.GetSetting("check14", false);
             ScaleForm();
         }
 
@@ -72,6 +75,11 @@ namespace psDLC
             LV1.Height = Height - textBox2.Height - 135;
             panel1.Width = LV1.Width;
             panel1.Height = LV1.Height;
+            panel2.Width = LV1.Width;
+            panel2.Height = LV1.Height + 30;
+            label8.Left = panel2.Width - label8.Width;
+            label4.Width = panel2.Width - pictureBox1.Width - 16;
+            label4.Height = panel2.Height - label8.Height;
             Button2.Top = LV1.Bottom + 5;
             linkLabel1.Top = LV1.Bottom + 10;
             Button2.Left = LV1.Right - Button2.Width;
@@ -83,7 +91,7 @@ namespace psDLC
 
         void DlcListError(object sender, PDL e)
         {
-            OrbisLog("ERROR: " + e.DlcListErrorMessage);
+            AppLog("ERROR: " + e.DlcListErrorMessage);
         }
 
 
@@ -153,7 +161,7 @@ namespace psDLC
             }
             else
             {
-                OrbisLog("ERROR: No HTML content found.");
+                AppLog("ERROR: No HTML content found.");
             }
         }
 
@@ -213,19 +221,19 @@ namespace psDLC
                 }
                 else
                 {
-                    OrbisLog("ERROR: Invalid Content ID" + Environment.NewLine + "Failed to load content id for " + textBox1.Text);
+                    AppLog("ERROR: Invalid Content ID" + Environment.NewLine + "Failed to load content id for " + textBox1.Text);
                 }
             }
             else
             {
-                OrbisLog("ERROR: No XML content found.");
+                AppLog("ERROR: No XML content found.");
             }
         }
 
 
         void PkgListError(object sender, PDL e)
         {
-            OrbisLog("ERROR: " + e.PkgListErrorMessage);
+            AppLog("ERROR: " + e.PkgListErrorMessage);
         }
 
 
@@ -245,7 +253,66 @@ namespace psDLC
 
         void ManifestError(object sender, PDL e)
         {
-            OrbisLog("ERROR: " + e.ManifestErrorMessage);
+            AppLog("ERROR: " + e.ManifestErrorMessage);
+        }
+
+        
+        void GotDlcInfo(object sender, PDL e)
+        {
+            string PlData = e.DlcInfoData, fsData, fsUnit, fsValue, dlcDesc, dlcType, dlcImgUrl, dlcPlatfrm;
+            string[] Spl1, Spl2;
+
+            Spl1 = Regex.Split(PlData, "\"long-description\":\"");
+            Spl2 = Regex.Split(Spl1[1], "\"");
+            dlcDesc = Strings.Trim(Spl2[0]);
+            dlcDesc = Regex.Replace(dlcDesc, "[^a-zA-Z0-9 -<>&,]", "");
+
+            Spl1 = Regex.Split(PlData, "\"file-size\":{");
+            Spl2 = Regex.Split(Spl1[1], "}");
+            fsData = Strings.Trim(Spl2[0]);
+            Spl1 = Regex.Split(fsData, "\"unit\":\"");
+            Spl2 = Regex.Split(Spl1[1], "\"");
+            fsUnit = Strings.Trim(Spl2[0]);
+            Spl1 = Regex.Split(fsData, "\"value\":");
+            fsValue = Strings.Trim(Spl1[1]);
+
+            Spl1 = Regex.Split(PlData, "\"game-content-type\":\"");
+            Spl2 = Regex.Split(Spl1[1], "\"");
+            dlcType = Strings.Trim(Spl2[0]);
+
+            Spl1 = Regex.Split(PlData, "\"thumbnail-url-base\":\"");
+            Spl2 = Regex.Split(Spl1[1], "\"");
+            dlcImgUrl = Strings.Trim(Spl2[0]) + "?w=350&h=350";
+
+            Spl1 = Regex.Split(PlData, "\"platforms\":\\[");
+            Spl2 = Regex.Split(Spl1[1], "\\]");
+            dlcPlatfrm = Strings.Trim(Spl2[0]);
+
+            pictureBox1.ImageLocation = dlcImgUrl;
+            pictureBox1.LoadAsync();
+
+            label4.Text = dlcDesc.Replace("<br>","\n");
+            if (fsValue == "null" || String.IsNullOrEmpty(fsUnit))
+            {
+                fsValue = "0";
+                fsUnit = "Bytes";
+            }
+            label5.Text = "Size: " + fsValue + " " + fsUnit;
+            if (dlcType == "null" || String.IsNullOrEmpty(dlcType))
+            {
+                dlcType = "Unknown";
+            }
+            label6.Text = "Type: " + dlcType;
+            label7.Text = "Platform: " + dlcPlatfrm.Replace("\"","");
+
+            panel2.Visible = true;
+        }
+
+
+        void DlcInfoError(object sender, PDL e)
+        {
+            panel2.Visible = false;
+            AppLog("ERROR: " + e.DlcInfoErrorMessage);
         }
 
 
@@ -262,7 +329,7 @@ namespace psDLC
 
         void ImageError(object sender, PDL e)
         {
-            OrbisLog("IMAGE ERROR: " + e.ImageErrorMessage + Environment.NewLine + "Creating without icon0.png");
+            AppLog("IMAGE ERROR: " + e.ImageErrorMessage + Environment.NewLine + "Creating without icon0.png");
             CreatePKG(selCid, selName, titleID);
         }
         
@@ -309,7 +376,7 @@ namespace psDLC
                 }
                 else
                 {
-                    OrbisLog("ERROR: Invalid Content ID" + Environment.NewLine + "Use the content id in the following format CUSA00000 or XX0000-CUSA00000_00-0000000000000000");
+                    AppLog("ERROR: Invalid Content ID" + Environment.NewLine + "Use the content id in the following format CUSA00000 or XX0000-CUSA00000_00-0000000000000000");
                 }
             }
         }
@@ -327,7 +394,7 @@ namespace psDLC
             }
             else
             {
-                OrbisLog("ERROR: orbis-pub-cmd.exe not found" + Environment.NewLine + "You need to place orbis-pub-cmd.exe in the same directory as this application");
+                AppLog("ERROR: orbis-pub-cmd.exe not found" + Environment.NewLine + "You need to place orbis-pub-cmd.exe in the same directory as this application");
             }
         }
 
@@ -456,7 +523,18 @@ namespace psDLC
                 Process.Start(linkLabel1.Text);
             }
         }
-        
+
+
+        private void label8_Click(object sender, EventArgs e)
+        {
+            panel2.Visible = false;
+            label4.Text = "";
+            label5.Text = "";
+            label6.Text = "";
+            label7.Text = "";
+            pictureBox1.Image = null;
+        }
+
 
         private void LV1_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -470,6 +548,10 @@ namespace psDLC
                 selCid = LvItem.SubItems[3].Text;
                 selImg = LvItem.SubItems[4].Text;
                 Button2.Visible = true;
+                if (settings.GetSetting("check14", false) == true)
+                {
+                    PDL1.GetDlcInfo(titleRgn, Regex.Split(selCid, "/")[Information.UBound(Regex.Split(selCid, "/"))]);
+                }
             }
         }
 
@@ -497,7 +579,7 @@ namespace psDLC
             }
             catch(Exception ex)
             {
-                OrbisLog("ERROR: " + ex.Message);
+                AppLog("ERROR: " + ex.Message);
             }
         }
 
@@ -507,20 +589,20 @@ namespace psDLC
             string ProcData = e.Data;
             try
             {
-                OrbisLog(ProcData);
+                AppLog(ProcData);
             }
             catch (Exception ex)
             {
-                OrbisLog("ERROR: " + ex.Message);
+                AppLog("ERROR: " + ex.Message);
             }
         }
 
 
-        void OrbisLog(string strText)
+        void AppLog(string strText)
         {
             if (InvokeRequired)
             {
-                this.Invoke(new Action<string>(OrbisLog), new object[] { strText });
+                this.Invoke(new Action<string>(AppLog), new object[] { strText });
                 return;
             }
             if (strText != null && strText.Length > 0)
@@ -594,6 +676,12 @@ namespace psDLC
         {
             settings.SaveSetting("check13", checkBox13.Checked);
         }
+
+        private void checkBox14_CheckedChanged(object sender, EventArgs e)
+        {
+            settings.SaveSetting("check14", checkBox14.Checked);
+        }
+
 
         bool isAllowed(string cType)
         {

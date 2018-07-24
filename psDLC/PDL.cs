@@ -14,6 +14,8 @@ namespace psDLC
         public event EventHandler<PDL> PkgListError;
         public event EventHandler<PDL> GotManifest;
         public event EventHandler<PDL> ManifestError;
+        public event EventHandler<PDL> GotDlcInfo;
+        public event EventHandler<PDL> DlcInfoError;
         public event EventHandler<PDL> GotImage;
         public event EventHandler<PDL> ImageError;
 
@@ -23,7 +25,10 @@ namespace psDLC
         public string PkgListErrorMessage { get; internal set; }
         public string ManifestData { get; internal set; }
         public string ManifestErrorMessage { get; internal set; }
+        public string DlcInfoData { get; internal set; }
+        public string DlcInfoErrorMessage { get; internal set; }
         public string ImageErrorMessage { get; internal set; }
+
 
         public void GetDlcList(string TitleID, string Region, int Pagenumber)
         {
@@ -66,6 +71,18 @@ namespace psDLC
             oWeb.Headers.Add("Accept-Language", "en-US");
             oWeb.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64)");
             oWeb.DownloadStringAsync(new Uri(strUrl));
+        }
+
+
+        public void GetDlcInfo(string Region, string contentID)
+        {
+            WebClient oWeb = new WebClient();
+            oWeb.DownloadStringCompleted += new DownloadStringCompletedEventHandler(GetDlcInfo_DownloadStringCompleted);
+            oWeb.Headers.Add("Referer", "https://store.playstation.com");
+            oWeb.Headers.Add("Accept", "application/json");
+            oWeb.Headers.Add("Accept-Language", "en-US");
+            oWeb.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64)");
+            oWeb.DownloadStringAsync(new Uri("https://store.playstation.com/valkyrie-api/" + Region.Replace("-","/") + "/30/resolve/" + contentID));
         }
 
 
@@ -161,6 +178,29 @@ namespace psDLC
             }
         }
 
+
+        void GetDlcInfo_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
+        {
+            PDL DataEvent = new PDL();
+            try
+            {
+                DataEvent.DlcInfoData = e.Result;
+                GotDlcInfo(this, DataEvent);
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    DataEvent.DlcInfoErrorMessage = ex.InnerException.Message;
+                }
+                else
+                {
+                    DataEvent.DlcInfoErrorMessage = ex.Message;
+                }
+                DlcInfoError(this, DataEvent);
+            }
+        }
+        
 
         void DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
