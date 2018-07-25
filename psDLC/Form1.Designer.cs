@@ -68,9 +68,19 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.textBox4 = new System.Windows.Forms.TextBox();
+            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.button5 = new System.Windows.Forms.Button();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.panel3.SuspendLayout();
             this.SuspendLayout();
             // 
             // Button1
@@ -192,6 +202,7 @@
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.SystemColors.Control;
+            this.panel1.Controls.Add(this.label14);
             this.panel1.Controls.Add(this.label9);
             this.panel1.Controls.Add(this.checkBox14);
             this.panel1.Controls.Add(this.label3);
@@ -212,7 +223,7 @@
             this.panel1.Controls.Add(this.checkBox1);
             this.panel1.Location = new System.Drawing.Point(15, 48);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(406, 475);
+            this.panel1.Size = new System.Drawing.Size(592, 540);
             this.panel1.TabIndex = 10;
             this.panel1.Visible = false;
             // 
@@ -273,7 +284,7 @@
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(93, 39);
             this.button4.TabIndex = 24;
-            this.button4.Text = "Close";
+            this.button4.Text = "Apply";
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
@@ -444,7 +455,7 @@
             this.panel2.Controls.Add(this.pictureBox1);
             this.panel2.Location = new System.Drawing.Point(15, 48);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1105, 399);
+            this.panel2.Size = new System.Drawing.Size(863, 436);
             this.panel2.TabIndex = 12;
             this.panel2.Visible = false;
             // 
@@ -505,11 +516,113 @@
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             // 
+            // panel3
+            // 
+            this.panel3.Controls.Add(this.label13);
+            this.panel3.Controls.Add(this.label11);
+            this.panel3.Controls.Add(this.label10);
+            this.panel3.Controls.Add(this.textBox4);
+            this.panel3.Controls.Add(this.textBox3);
+            this.panel3.Controls.Add(this.button5);
+            this.panel3.Location = new System.Drawing.Point(15, 48);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(476, 562);
+            this.panel3.TabIndex = 13;
+            this.panel3.Visible = false;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(17, 118);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(150, 25);
+            this.label11.TabIndex = 4;
+            this.label11.Text = "DLC Content ID";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(17, 25);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(109, 25);
+            this.label10.TabIndex = 3;
+            this.label10.Text = "DLC Name";
+            // 
+            // textBox4
+            // 
+            this.textBox4.Location = new System.Drawing.Point(48, 146);
+            this.textBox4.MaxLength = 36;
+            this.textBox4.Name = "textBox4";
+            this.textBox4.Size = new System.Drawing.Size(481, 29);
+            this.textBox4.TabIndex = 2;
+            this.textBox4.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.textBox4.Enter += new System.EventHandler(this.textBox4_Enter);
+            this.textBox4.Leave += new System.EventHandler(this.textBox4_Leave);
+            // 
+            // textBox3
+            // 
+            this.textBox3.Location = new System.Drawing.Point(48, 53);
+            this.textBox3.Name = "textBox3";
+            this.textBox3.Size = new System.Drawing.Size(481, 29);
+            this.textBox3.TabIndex = 1;
+            this.textBox3.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.textBox3.Enter += new System.EventHandler(this.textBox3_Enter);
+            this.textBox3.Leave += new System.EventHandler(this.textBox3_Leave);
+            // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(228, 203);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(161, 39);
+            this.button5.TabIndex = 0;
+            this.button5.Text = "Create fPkg";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.142858F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label12.Location = new System.Drawing.Point(141, 9);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(137, 25);
+            this.label12.TabIndex = 14;
+            this.label12.Text = "Manual Input";
+            this.label12.Click += new System.EventHandler(this.label12_Click);
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label13.Location = new System.Drawing.Point(557, 2);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(35, 32);
+            this.label13.TabIndex = 6;
+            this.label13.Text = "X";
+            this.label13.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.label13.Click += new System.EventHandler(this.label13_Click);
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label14.Location = new System.Drawing.Point(554, 2);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(35, 32);
+            this.label14.TabIndex = 30;
+            this.label14.Text = "X";
+            this.label14.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.label14.Click += new System.EventHandler(this.label14_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1312, 947);
+            this.Controls.Add(this.label12);
+            this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.label1);
@@ -531,6 +644,8 @@
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -577,6 +692,15 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.TextBox textBox4;
+        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label14;
     }
 }
 

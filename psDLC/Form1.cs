@@ -18,7 +18,9 @@ namespace psDLC
 
         int pageNum;
         String htmBuffer, titleID, titleRgn, selName, selCid, selManifest, selImg;
-        Boolean textHint;
+        Boolean text1Hint;
+        Boolean text3Hint;
+        Boolean text4Hint;
 
         public Form1()
         {
@@ -38,9 +40,17 @@ namespace psDLC
             PDL1.DlcInfoError += DlcInfoError;
             PDL1.GotImage += GotImage;
             PDL1.ImageError += ImageError;
-            textHint = true;
+
+            text1Hint = true;
             textBox1.ForeColor = Color.Gray;
             textBox1.Text = "CUSA00000";
+            text3Hint = true;
+            textBox3.ForeColor = Color.Gray;
+            textBox3.Text = "Display Name For DLC";
+            text4Hint = true;
+            textBox4.ForeColor = Color.Gray;
+            textBox4.Text = "XX0000-CUSA00000_00-0000000000000000";
+
             checkBox1.Checked = settings.GetSetting("check1", true);
             checkBox2.Checked = settings.GetSetting("check2", true);
             checkBox3.Checked = settings.GetSetting("check3", true);
@@ -78,7 +88,11 @@ namespace psDLC
             panel1.Height = Height - label1.Height - 60;
             panel2.Width = LV1.Width;
             panel2.Height = LV1.Height + 30;
+            panel3.Width = LV1.Width;
+            panel3.Height = LV1.Height + Button2.Height + 30;
             label8.Left = panel2.Width - label8.Width;
+            label13.Left = panel3.Width - label13.Width;
+            label14.Left = panel1.Width - label14.Width;
             label4.Width = panel2.Width - pictureBox1.Width - 16;
             label4.Height = panel2.Height - label8.Height;
             Button2.Top = LV1.Bottom + 5;
@@ -336,7 +350,7 @@ namespace psDLC
     
         private void Button1_Click(object sender, EventArgs e)
         {
-            if (textHint == false)
+            if (text1Hint == false)
             {
                 LV1.Items.Clear();
                 textBox2.Clear();
@@ -431,6 +445,34 @@ namespace psDLC
         }
 
 
+        private void button5_Click(object sender, EventArgs e)
+        {
+            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "orbis-pub-cmd.exe"))
+            {
+                Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "fake_dlc_temp/sce_sys/");
+                Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "fake_dlc_pkg/");
+                if (text3Hint == false && text4Hint == false && textBox4.Text.ToUpper().Contains("CUSA") && textBox4.Text.Length == 36)
+                {
+                    CreatePKG(textBox4.Text.ToUpper(), textBox3.Text, Strings.Mid(textBox4.Text.ToUpper(), 8, 12), false);
+                    text3Hint = true;
+                    textBox3.ForeColor = Color.Gray;
+                    textBox3.Text = "Display Name For DLC";
+                    text4Hint = true;
+                    textBox4.ForeColor = Color.Gray;
+                    textBox4.Text = "XX0000-CUSA00000_00-0000000000000000";
+                }
+                else
+                {
+                    AppLog("ERROR: You must enter a display name for the dlc and the content id." + Environment.NewLine + Environment.NewLine + "The content id must be in the following format: XX0000-CUSA00000_00-0000000000000000");
+                }
+            }
+            else
+            {
+                AppLog("ERROR: orbis-pub-cmd.exe not found" + Environment.NewLine + "You need to place orbis-pub-cmd.exe in the same directory as this application");
+            }
+        }
+
+
         private void label1_Click(object sender, EventArgs e)
         {
             if (panel1.Visible == true)
@@ -445,15 +487,6 @@ namespace psDLC
         }
 
 
-        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            if (linkLabel1.Text.Length > 6)
-            {
-                Process.Start(linkLabel1.Text);
-            }
-        }
-
-
         private void label8_Click(object sender, EventArgs e)
         {
             panel2.Visible = false;
@@ -464,7 +497,42 @@ namespace psDLC
             pictureBox1.Image = null;
         }
 
+        
+        private void label12_Click(object sender, EventArgs e)
+        {
+            if (panel3.Visible == true)
+            {
+                panel3.Visible = false;
+            }
+            else
+            {
+                panel3.BringToFront();
+                panel3.Visible = true;
+            }
+        }
 
+
+        private void label13_Click(object sender, EventArgs e)
+        {
+            panel3.Visible = false;
+        }
+
+
+        private void label14_Click(object sender, EventArgs e)
+        {
+            panel1.Visible = false;
+        }
+
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (linkLabel1.Text.Length > 6)
+            {
+                Process.Start(linkLabel1.Text);
+            }
+        }
+
+        
         private void CreatePKG(string CID, string Name, string TID, bool hasImage = false)
         {
             string[] Spl1;
@@ -533,9 +601,9 @@ namespace psDLC
 
         private void textBox1_Enter(object sender, EventArgs e)
         {
-            if (textHint)
+            if (text1Hint)
             {
-                textHint = false;
+                text1Hint = false;
                 textBox1.Text = "";
                 textBox1.ForeColor = Color.Black;
             }
@@ -554,11 +622,55 @@ namespace psDLC
 
         private void textBox1_Leave(object sender, EventArgs e)
         {
-            if (!textHint && string.IsNullOrEmpty(textBox1.Text))
+            if (!text1Hint && string.IsNullOrEmpty(textBox1.Text))
             {
-                textHint = true;
+                text1Hint = true;
                 textBox1.Text = "CUSA00000";
                 textBox1.ForeColor = Color.Gray;
+            }
+        }
+
+
+        private void textBox3_Enter(object sender, EventArgs e)
+        {
+            if (text3Hint)
+            {
+                text3Hint = false;
+                textBox3.Text = "";
+                textBox3.ForeColor = Color.Black;
+            }
+        }
+
+
+        private void textBox3_Leave(object sender, EventArgs e)
+        {
+            if (!text3Hint && string.IsNullOrEmpty(textBox3.Text))
+            {
+                text3Hint = true;
+                textBox3.Text = "Display Name For DLC";
+                textBox3.ForeColor = Color.Gray;
+            }
+        }
+
+
+        private void textBox4_Enter(object sender, EventArgs e)
+        {
+            if (text4Hint)
+            {
+                text4Hint = false;
+                textBox4.Text = "";
+                textBox4.ForeColor = Color.Black;
+            }
+        }
+
+
+        private void textBox4_Leave(object sender, EventArgs e)
+        {
+            if (!text4Hint && string.IsNullOrEmpty(textBox4.Text))
+            {
+                text4Hint = true;
+                textBox4.Text = "XX0000-CUSA00000_00-0000000000000000";
+                textBox4.ForeColor = Color.Gray;
             }
         }
 
