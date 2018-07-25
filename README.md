@@ -6,9 +6,9 @@ both formats of content id can be used or the ps store url.
 <b>or</b><br>
 <b>XX0000-CUSA00000_00-0000000000000000</b><br>
 <b>or</b><br>
-<b>https://store.playstation.com/xx-xx/product/XX0000-CUSA00000_00-0000000000000000</b>
+<b>https&#11;://store.playstation.com/xx-xx/product/XX0000-CUSA00000_00-0000000000000000</b>
 <br>
-
+<br>
 
 based on the python projects<br>
  https://github.com/GarnetSunset/psDLCIndex
