@@ -7,7 +7,7 @@ namespace psDLC
 {
     class PDL
     {
-
+        
         public event EventHandler<PDL> GotDlcList;
         public event EventHandler<PDL> DlcListError;
         public event EventHandler<PDL> GotPkgList;
@@ -30,18 +30,25 @@ namespace psDLC
         public string ImageErrorMessage { get; internal set; }
 
 
-        public void GetDlcList(string TitleID, string Region, int Pagenumber)
+        public void GetDlcList(string TitleID, string Region, int Pagenumber, bool isStore = false)
         {
             WebClient oWeb = new WebClient();
             oWeb.DownloadStringCompleted += new DownloadStringCompletedEventHandler(GetDlcList_DownloadStringCompleted);
-            oWeb.Headers.Add("Referer", "https://store.playstation.com/");
             oWeb.Headers.Add("Accept", "text/html");
             oWeb.Headers.Add("Accept-Language", "en-US");
             oWeb.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64)");
-            oWeb.DownloadStringAsync(new Uri("https://store.playstation.com/" + Region + "/grid/" + TitleID + "/" +  Pagenumber + "?relationship=add-ons"));
+            oWeb.Headers.Add("Referer", "https://store.playstation.com/");
+            if (isStore == true)
+            {
+                oWeb.DownloadStringAsync(new Uri("https://store.playstation.com/" + Region + "/grid/" + TitleID + "/" + Pagenumber));
+            }
+            else
+            {
+                oWeb.DownloadStringAsync(new Uri("https://store.playstation.com/" + Region + "/grid/" + TitleID + "/" + Pagenumber + "?relationship=add-ons"));
+            }
         }
 
-
+       
         public void GetPkgList(string GameID)
         {
             WebClient oWeb = new WebClient();

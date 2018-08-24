@@ -130,7 +130,7 @@ namespace psDLC
                     htmBuffer = htmBuffer + PlData;
                     LV1.BeginUpdate();
                     LV1.Items.Clear();
-
+        
                     Spl1 = Regex.Split(htmBuffer, "desktop-presentation__grid-cell__base");
 
                     for (int i = 1; i < Information.UBound(Spl1) + 1; i++)
@@ -138,8 +138,16 @@ namespace psDLC
 
                         Spl2 = Regex.Split(Spl1[i], "grid-cell__footer");
 
-                        Spl3 = Regex.Split(Spl2[0], "class=\"grid-cell__title\">");
-                        Spl4 = Regex.Split(Spl3[1], "<");
+                        if (Strings.InStr(Spl2[0], "class=\"grid-cell__title\">") > 0)
+                        {
+                            Spl3 = Regex.Split(Spl2[0], "class=\"grid-cell__title\">");
+                            Spl4 = Regex.Split(Spl3[1], "<");
+                        }
+                        else
+                        {
+                            Spl3 = Regex.Split(Spl2[0], "<span title=\"");
+                            Spl4 = Regex.Split(Spl3[1], "\"");
+                        }
                         TmpTitle = Strings.Trim(Spl4[0]);
                         TmpTitle = WebUtility.HtmlDecode(TmpTitle);
 
@@ -376,7 +384,7 @@ namespace psDLC
                     titleRgn = Spl2[0];
                     Spl1 = Regex.Split(textBox1.Text, "/product/");
                     titleID = Strings.Mid(Spl1[1], 8, 12);
-                    PDL1.GetDlcList(titleID, titleRgn, pageNum); 
+                    PDL1.GetDlcList(titleID, titleRgn, pageNum);
                 }
                 else if (textBox1.Text.Length >= 19 && textBox1.Text.ToLower().Contains("cusa"))
                 {
@@ -397,6 +405,26 @@ namespace psDLC
                             break;
                         default:
                             titleRgn = "ja-jp";
+                            break;
+                    }
+                    PDL1.GetDlcList(titleID, titleRgn, pageNum);
+                }
+                else if (textBox1.Text.Length >= 19 && textBox1.Text.ToLower().Contains("store-ms"))
+                {
+                    textBox1.Text = textBox1.Text.ToUpper();
+                    pageNum = 1;
+                    htmBuffer = string.Empty;
+                    titleID = textBox1.Text;
+                    switch (Strings.Mid(titleID, 7, 8))
+                    {
+                        case "MSF77008":
+                            titleRgn = "en-us";
+                            break;
+                        case "MSF75508":
+                            titleRgn = "en-gb";
+                            break;
+                        default:
+                            titleRgn = "en-us";
                             break;
                     }
                     PDL1.GetDlcList(titleID, titleRgn, pageNum);
