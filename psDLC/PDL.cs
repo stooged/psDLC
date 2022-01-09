@@ -30,21 +30,31 @@ namespace psDLC
         public string ImageErrorMessage { get; internal set; }
 
 
-        public void GetDlcList(string TitleID, string Region, int Pagenumber, bool isStore = false)
+        public void GetDlcList(string TitleID, string Region)
         {
             WebClient oWeb = new WebClient();
             oWeb.DownloadStringCompleted += new DownloadStringCompletedEventHandler(GetDlcList_DownloadStringCompleted);
-            oWeb.Headers.Add("Accept", "text/html");
             oWeb.Headers.Add("Accept-Language", "en-US");
             oWeb.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64)");
-            oWeb.Headers.Add("Referer", "https://store.playstation.com/");
-            if (isStore == true)
+            if (TitleID.ToLower().StartsWith("ppsa"))
             {
-                oWeb.DownloadStringAsync(new Uri("https://store.playstation.com/" + Region + "/grid/" + TitleID + "/" + Pagenumber));
+                oWeb.Headers.Add("Accept", "text/html");
+                oWeb.Headers.Add("Referer", "https://serialstation.com");
+                TitleID = TitleID.ToLower().Replace("_00", "");
+                TitleID = TitleID.Replace("ppsa", "");
+                oWeb.DownloadStringAsync(new Uri("https://serialstation.com/titles/PPSA/" + TitleID));
             }
-            else
+            else if (TitleID.ToLower().StartsWith("cusa"))
             {
-                oWeb.DownloadStringAsync(new Uri("https://store.playstation.com/" + Region + "/grid/" + TitleID + "/" + Pagenumber + "?relationship=add-ons"));
+                oWeb.Headers.Add("Accept", "application/json");
+                oWeb.Headers.Add("Referer", "https://store.playstation.com/");
+                oWeb.DownloadStringAsync(new Uri("https://store.playstation.com/store/api/chihiro/00_09_000/titlecontainer/" + Region.Substring(3, 2).ToUpper() + "/" + Region.Substring(0, 2) + "/999/" + TitleID + "/?relationship=ADD-ONS"));
+            }
+            else if (TitleID.ToLower().StartsWith("up") || TitleID.ToLower().StartsWith("ep"))
+            {
+                oWeb.Headers.Add("Accept", "application/json");
+                oWeb.Headers.Add("Referer", "https://store.playstation.com/");
+                oWeb.DownloadStringAsync(new Uri("https://store.playstation.com/store/api/chihiro/00_09_000/container/" + Region.Substring(3, 2).ToUpper() + "/" + Region.Substring(0, 2) + "/999/" + TitleID + "/?relationship=ADD-ONS"));
             }
         }
 
@@ -89,23 +99,14 @@ namespace psDLC
             oWeb.Headers.Add("Accept", "application/json");
             oWeb.Headers.Add("Accept-Language", "en-US");
             oWeb.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64)");
-            oWeb.DownloadStringAsync(new Uri("https://store.playstation.com/valkyrie-api/" + Region.Replace("-","/") + "/30/resolve/" + contentID));
+            oWeb.DownloadStringAsync(new Uri("https://store.playstation.com/store/api/chihiro/00_09_000/container/" + Region.Substring(3, 2).ToUpper() + "/" + Region.Substring(0, 2) + "/999/" + contentID));
         }
 
 
         public void GetImage(string strUrl, string fPath)
         {
             WebClient oWeb = new WebClient();
-            string imgSize = "496";
             strUrl = strUrl.Replace("&amp;", "&");
-            strUrl = strUrl.Replace("w=124", "w=" + imgSize);
-            strUrl = strUrl.Replace("h=124", "h=" + imgSize);
-            strUrl = strUrl.Replace("w=186", "w=" + imgSize);
-            strUrl = strUrl.Replace("h=186", "h=" + imgSize);
-            strUrl = strUrl.Replace("w=248", "w=" + imgSize);
-            strUrl = strUrl.Replace("h=248", "h=" + imgSize);
-            strUrl = strUrl.Replace("w=372", "w=" + imgSize);
-            strUrl = strUrl.Replace("h=372", "h=" + imgSize);
             oWeb.DownloadFileCompleted += DownloadFileCompleted;
             oWeb.Headers.Add("Referer", strUrl);
             oWeb.Headers.Add("Accept", "*/*");

@@ -8,6 +8,7 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
+
 namespace psDLC
 {
     public partial class Form1 : Form
@@ -51,20 +52,8 @@ namespace psDLC
             textBox4.ForeColor = Color.Gray;
             textBox4.Text = "XX0000-CUSA00000_00-0000000000000000";
 
-            checkBox1.Checked = settings.GetSetting("check1", true);
-            checkBox2.Checked = settings.GetSetting("check2", true);
-            checkBox3.Checked = settings.GetSetting("check3", true);
-            checkBox4.Checked = settings.GetSetting("check4", true);
-            checkBox5.Checked = settings.GetSetting("check5", true);
-            checkBox6.Checked = settings.GetSetting("check6", true);
-            checkBox7.Checked = settings.GetSetting("check7", true);
-            checkBox8.Checked = settings.GetSetting("check8", true);
-            checkBox9.Checked = settings.GetSetting("check9", true);
-            checkBox10.Checked = settings.GetSetting("check10", true);
-            checkBox11.Checked = settings.GetSetting("check11", true);
-            checkBox12.Checked = settings.GetSetting("check12", true);
-            checkBox13.Checked = settings.GetSetting("check13", false);
-            checkBox14.Checked = settings.GetSetting("check14", false);
+            checkBox13.Checked = settings.GetSetting("check13", true);
+            checkBox14.Checked = settings.GetSetting("check14", true);
             ScaleForm();
         }
 
@@ -113,72 +102,102 @@ namespace psDLC
         void GotDlcList(object sender, PDL e)
         {
             string PlData = e.DlcListData;
+            string[] Spl1, Spl2, Spl3, Spl4;
+            string TmpTitle, TmpURL, TmpImgUrl, TmpType, TmpPlatForm;
 
-            if (Strings.InStr(PlData, "cell__title") > 0)
+            if (PlData.Contains("\"default_sku\":"))
             {
-                string[] Spl1, Spl2, Spl3, Spl4;
-                string TmpTitle, TmpURL, TmpImgUrl, TmpType, TmpPlatForm;
+                LV1.BeginUpdate();
+                LV1.Items.Clear();
+                Spl1 = Regex.Split(PlData, "\"default_sku\":");
 
-                if (Strings.InStr(PlData, "paginator-control__end paginator-control__arrow-navigation internal-app-link ember-view") > 0)
+                for (int i = 1; i < Information.UBound(Spl1); i++)
                 {
-                    pageNum = pageNum + 1;
-                    htmBuffer = htmBuffer + PlData;
-                    PDL1.GetDlcList(titleID, titleRgn, pageNum);
-                }
-                else
-                {
-                    htmBuffer = htmBuffer + PlData;
-                    LV1.BeginUpdate();
-                    LV1.Items.Clear();
-        
-                    Spl1 = Regex.Split(htmBuffer, "desktop-presentation__grid-cell__base");
 
-                    for (int i = 1; i < Information.UBound(Spl1) + 1; i++)
+                    if (Spl1[i].Contains("\"Add-On\",\"id\":\""))
                     {
 
-                        Spl2 = Regex.Split(Spl1[i], "grid-cell__footer");
-
-                        if (Strings.InStr(Spl2[0], "class=\"grid-cell__title\">") > 0)
-                        {
-                            Spl3 = Regex.Split(Spl2[0], "class=\"grid-cell__title\">");
-                            Spl4 = Regex.Split(Spl3[1], "<");
-                        }
-                        else
-                        {
-                            Spl3 = Regex.Split(Spl2[0], "<span title=\"");
-                            Spl4 = Regex.Split(Spl3[1], "\"");
-                        }
+                        Spl3 = Regex.Split(Spl1[i], "\"name\":\"");
+                        Spl4 = Regex.Split(Spl3[1], "\"");
                         TmpTitle = Strings.Trim(Spl4[0]);
                         TmpTitle = WebUtility.HtmlDecode(TmpTitle);
-
-                        Spl3 = Regex.Split(Spl2[0], "a href=\"");
+                        Spl3 = Regex.Split(Spl1[i], "\"Add-On\",\"id\":\"");
                         Spl4 = Regex.Split(Spl3[1], "\"");
-                        TmpURL = "https://store.playstation.com" + Strings.Trim(Spl4[0]);
-
-                        Spl3 = Regex.Split(Spl2[0], "img src=\"http");
-                        Spl4 = Regex.Split(Spl3[1], "\"");
-                        TmpImgUrl = "http" + Strings.Trim(Spl4[0]);
-
-                        Spl3 = Regex.Split(Spl2[0], "left-detail--detail-2\">");
-                        Spl4 = Regex.Split(Spl3[1], "<");
-                        TmpType = Strings.Trim(Spl4[0]);
-                        TmpType = WebUtility.HtmlDecode(TmpType);
-
-                        Spl3 = Regex.Split(Spl2[0], "left-detail--detail-1\">");
-                        Spl4 = Regex.Split(Spl3[1], "<");
-                        TmpPlatForm = Strings.Trim(Spl4[0]);
-                        TmpPlatForm = WebUtility.HtmlDecode(TmpPlatForm);
-
-                        if (isAllowed(TmpType))
+                        switch (Strings.Mid(Strings.Trim(Spl4[0]), 1, 1))
                         {
-                            string[] TmpItem = { TmpTitle, TmpType, TmpPlatForm, TmpURL, TmpImgUrl };
-                            var LvItem = new ListViewItem(TmpItem);
-                            LV1.Items.Add(LvItem);
+                            case "U":
+                                titleRgn = "en-us";
+                                break;
+                            case "E":
+                                titleRgn = "en-gb";
+                                break;
+                            case "I":
+                                titleRgn = "en-us";
+                                break;
+                            default:
+                                titleRgn = "ja-jp";
+                                break;
                         }
-
+                        TmpURL = "https://store.playstation.com/" + titleRgn + "/product/" + Strings.Trim(Spl4[0]);
+                        Spl3 = Regex.Split(Spl1[i], "\"type\":1,\"url\":\"");
+                        Spl4 = Regex.Split(Spl3[1], "\"");
+                        TmpImgUrl = Strings.Trim(Spl4[0]);
+                        TmpType = "";
+                        TmpPlatForm = "";
+                        string[] TmpItem = { TmpTitle, TmpType, TmpPlatForm, TmpURL, TmpImgUrl };
+                        var LvItem = new ListViewItem(TmpItem);
+                        LV1.Items.Add(LvItem);
                     }
-                    LV1.EndUpdate();
                 }
+                LV1.EndUpdate();
+            }
+            else if (PlData.Contains("\">Content</"))
+            {
+                LV1.BeginUpdate();
+                LV1.Items.Clear();
+
+                Spl1 = Regex.Split(PlData, "\">Content</");
+                Spl2 = Regex.Split(Spl1[1], "</table>");
+
+                Spl1 = Regex.Split(Spl2[0], "<a href=\"");
+
+                for (int i = 1; i < Information.UBound(Spl1); i++)
+                {
+
+                    if (Spl1[i].Contains("<td>DLC</td>") || Spl1[i].Contains("<td>Avatar</td>"))
+                    {
+
+                        Spl3 = Regex.Split(Spl1[i], ">");
+                        Spl4 = Regex.Split(Spl3[1], "<");
+                        TmpTitle = Strings.Trim(Spl4[0]);
+                        TmpTitle = WebUtility.HtmlDecode(TmpTitle);
+                        Spl3 = Regex.Split(Spl1[i], "cell\">");
+                        Spl4 = Regex.Split(Spl3[1], "<");
+                        switch (Strings.Mid(Strings.Trim(Spl4[0]), 1, 1))
+                        {
+                            case "U":
+                                titleRgn = "en-us";
+                                break;
+                            case "E":
+                                titleRgn = "en-gb";
+                                break;
+                            case "I":
+                                titleRgn = "en-us";
+                                break;
+                            default:
+                                titleRgn = "ja-jp";
+                                break;
+                        }
+                        TmpURL = "https://store.playstation.com/" + titleRgn + "/product/" + Strings.Trim(Spl4[0]);
+                        TmpImgUrl = "";
+                        TmpType = "";
+                        TmpPlatForm = "";
+                        string[] TmpItem = { TmpTitle, TmpType, TmpPlatForm, TmpURL, TmpImgUrl };
+                        var LvItem = new ListViewItem(TmpItem);
+                        LV1.Items.Add(LvItem);
+                    }
+                }
+                LV1.EndUpdate();
             }
             else
             {
@@ -235,7 +254,7 @@ namespace psDLC
                             break;
                     }
 
-                    PDL1.GetDlcList(titleID, titleRgn, pageNum);
+                    PDL1.GetDlcList(titleID, titleRgn);
                 }
                 else
                 {
@@ -280,30 +299,27 @@ namespace psDLC
             string PlData = e.DlcInfoData, fsData, fsUnit, fsValue, dlcDesc, dlcType, dlcImgUrl, dlcPlatfrm;
             string[] Spl1, Spl2;
 
-            Spl1 = Regex.Split(PlData, "\"long-description\":\"");
+            Spl1 = Regex.Split(PlData, "\"long_desc\":\"");
             Spl2 = Regex.Split(Spl1[1], "\"");
             dlcDesc = Strings.Trim(Spl2[0]);
             dlcDesc = WebUtility.HtmlDecode(dlcDesc);
             dlcDesc = Regex.Replace(dlcDesc, "[^a-zA-Z0-9 -<>&,]", "");
 
-            Spl1 = Regex.Split(PlData, "\"file-size\":{");
-            Spl2 = Regex.Split(Spl1[1], "}");
+            Spl1 = Regex.Split(PlData, "\"size\":");
+            Spl2 = Regex.Split(Spl1[1], ",");
             fsData = Strings.Trim(Spl2[0]);
-            Spl1 = Regex.Split(fsData, "\"unit\":\"");
-            Spl2 = Regex.Split(Spl1[1], "\"");
-            fsUnit = Strings.Trim(Spl2[0]);
-            Spl1 = Regex.Split(fsData, "\"value\":");
-            fsValue = Strings.Trim(Spl1[1]);
-            fsUnit = WebUtility.HtmlDecode(fsUnit);
 
-            Spl1 = Regex.Split(PlData, "\"game-content-type\":\"");
+
+            Spl1 = Regex.Split(PlData, "\"game_contentType\":\"");
             Spl2 = Regex.Split(Spl1[1], "\"");
             dlcType = Strings.Trim(Spl2[0]);
             dlcType = WebUtility.HtmlDecode(dlcType);
 
-            Spl1 = Regex.Split(PlData, "\"thumbnail-url-base\":\"");
+
+            Spl1 = Regex.Split(PlData, "\"type\":1,\"url\":\"");
             Spl2 = Regex.Split(Spl1[1], "\"");
-            dlcImgUrl = Strings.Trim(Spl2[0]) + "?w=350&h=350";
+            dlcImgUrl = Strings.Trim(Spl2[0]);
+
 
             Spl1 = Regex.Split(PlData, "\"platforms\":\\[");
             Spl2 = Regex.Split(Spl1[1], "\\]");
@@ -314,12 +330,13 @@ namespace psDLC
             pictureBox1.LoadAsync();
 
             label4.Text = dlcDesc.Replace("<br>","\n");
-            if (fsValue == "null" || String.IsNullOrEmpty(fsUnit))
+            if (fsData == "null")
             {
                 fsValue = "0";
                 fsUnit = "Bytes";
             }
-            label5.Text = "Size: " + fsValue + " " + fsUnit;
+            label5.Text = "Size: " + fsData;
+
             if (dlcType == "null" || String.IsNullOrEmpty(dlcType))
             {
                 dlcType = "Unknown";
@@ -345,7 +362,8 @@ namespace psDLC
             bitmap.Save(imagePath + ".png", ImageFormat.Png);
             bitmap.Dispose();
             File.Delete(imagePath + ".jpeg");
-            CreatePKG(selCid, selName, titleID, true);
+            CreatePKG(selCid, selName, titleID, true) ;
+
         }
 
 
@@ -360,6 +378,7 @@ namespace psDLC
         {
             if (text1Hint == false)
             {
+                string[] Spl1, Spl2;
                 LV1.Items.Clear();
                 textBox2.Clear();
                 Button2.Visible = false;
@@ -374,17 +393,23 @@ namespace psDLC
                     textBox1.Text = textBox1.Text.ToUpper();
                     PDL1.GetPkgList(textBox1.Text);
                 }
+                else if (textBox1.Text.Length == 9 && textBox1.Text.ToLower().Contains("ppsa"))
+                {
+                    textBox1.Text = textBox1.Text.ToUpper();
+                    PDL1.GetDlcList(textBox1.Text,"");
+                }
                 else if (textBox1.Text.StartsWith("http") && textBox1.Text.Contains(".com/") && textBox1.Text.Contains("/product/") && textBox1.Text.ToLower().Contains("cusa") && textBox1.Text.Length > 36)
                 {
-                    pageNum = 1;
                     htmBuffer = string.Empty;
-                    string[] Spl1, Spl2;
                     Spl1 = Regex.Split(textBox1.Text, ".com/");
                     Spl2 = Regex.Split(Spl1[1], "/");
                     titleRgn = Spl2[0];
                     Spl1 = Regex.Split(textBox1.Text, "/product/");
                     titleID = Strings.Mid(Spl1[1], 8, 12);
-                    PDL1.GetDlcList(titleID, titleRgn, pageNum);
+
+                    textBox1.Text = Strings.Mid(Spl1[1], 8, 9);
+
+                    PDL1.GetDlcList(titleID, titleRgn);
                 }
                 else if (textBox1.Text.Length >= 19 && textBox1.Text.ToLower().Contains("cusa"))
                 {
@@ -407,27 +432,16 @@ namespace psDLC
                             titleRgn = "ja-jp";
                             break;
                     }
-                    PDL1.GetDlcList(titleID, titleRgn, pageNum);
+                    textBox1.Text = Strings.Mid(textBox1.Text, 8, 9);
+                    PDL1.GetDlcList(titleID, titleRgn);
                 }
-                else if (textBox1.Text.Length >= 19 && textBox1.Text.ToLower().Contains("store-ms"))
+                else if (textBox1.Text.Length >= 19 && textBox1.Text.ToLower().Contains("-ppsa") && textBox1.Text.ToLower().Contains("_00"))
                 {
                     textBox1.Text = textBox1.Text.ToUpper();
-                    pageNum = 1;
-                    htmBuffer = string.Empty;
-                    titleID = textBox1.Text;
-                    switch (Strings.Mid(titleID, 7, 8))
-                    {
-                        case "MSF77008":
-                            titleRgn = "en-us";
-                            break;
-                        case "MSF75508":
-                            titleRgn = "en-gb";
-                            break;
-                        default:
-                            titleRgn = "en-us";
-                            break;
-                    }
-                    PDL1.GetDlcList(titleID, titleRgn, pageNum);
+                    Spl1 = Regex.Split(textBox1.Text, "-PPSA");
+                    Spl2 = Regex.Split(Spl1[1], "_");
+                    textBox1.Text = "PPSA" + Spl2[0];
+                    PDL1.GetDlcList(textBox1.Text, "");
                 }
                 else
                 {
@@ -451,7 +465,15 @@ namespace psDLC
             {
                 Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "fake_dlc_temp/sce_sys/");
                 Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "fake_dlc_pkg/");
+
+                if (selImg == null || selImg == "")
+                {
+                    CreatePKG(selCid, selName, "", false);
+                }
+                else
+                { 
                 PDL1.GetImage(selImg, AppDomain.CurrentDomain.BaseDirectory + "fake_dlc_temp/sce_sys/icon0.jpeg");
+                }
             }
             else
             {
@@ -479,7 +501,7 @@ namespace psDLC
             {
                 Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "fake_dlc_temp/sce_sys/");
                 Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "fake_dlc_pkg/");
-                if (text3Hint == false && text4Hint == false && textBox4.Text.ToUpper().Contains("CUSA") && textBox4.Text.Length == 36)
+                if (text3Hint == false && text4Hint == false && textBox4.Text.ToUpper().Contains("CUSA") || textBox4.Text.ToUpper().Contains("PPSA") && textBox4.Text.Length == 36)
                 {
                     CreatePKG(textBox4.Text.ToUpper(), textBox3.Text, Strings.Mid(textBox4.Text.ToUpper(), 8, 12), false);
                     text3Hint = true;
@@ -491,7 +513,7 @@ namespace psDLC
                 }
                 else
                 {
-                    AppLog("ERROR: You must enter a display name for the dlc and the content id." + Environment.NewLine + Environment.NewLine + "The content id must be in the following format: XX0000-CUSA00000_00-0000000000000000");
+                    AppLog("ERROR: You must enter a display name for the dlc and the content id." + Environment.NewLine + Environment.NewLine + "The content id must be in the following format: XX0000-CUSA00000_00-0000000000000000 or XX0000-PPSA00000_00-0000000000000000");
                 }
             }
             else
@@ -554,7 +576,7 @@ namespace psDLC
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            if (linkLabel1.Text.Length > 6)
+            if (linkLabel1.Text.Length > 6 && linkLabel1.Text.StartsWith("http"))
             {
                 Process.Start(linkLabel1.Text);
             }
@@ -567,6 +589,7 @@ namespace psDLC
             Spl1 = Regex.Split(CID, "/");
             Name = Regex.Replace(Name, "[^A-Za-z0-9 ]", "");
             string cntId = Spl1[Information.UBound(Spl1)];
+            TID = Strings.Mid(cntId.ToUpper(), 8, 12);
             File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "fake_dlc_temp/param_template.sfx", SFX(cntId, Name, Strings.Mid(TID, 1, 9)));
             File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "fake_dlc_temp/fake_dlc_project.gp4", GP4(cntId, hasImage));
             RunOrbis("sfo_create fake_dlc_temp\\param_template.sfx fake_dlc_temp\\sce_sys\\param.sfo");
@@ -710,12 +733,19 @@ namespace psDLC
             if (LvItem != null)
             {
                 textBox2.Clear();
-                linkLabel1.Text = LvItem.SubItems[3].Text;
+                if (!LvItem.SubItems[3].Text.Contains("-PPSA"))
+                {
+                    linkLabel1.Text = LvItem.SubItems[3].Text;
+                }
+                else
+                {
+                    linkLabel1.Text = LvItem.Text;
+                }
                 selName = LvItem.Text;
                 selCid = LvItem.SubItems[3].Text;
                 selImg = LvItem.SubItems[4].Text;
                 Button2.Visible = true;
-                if (settings.GetSetting("check14", false) == true)
+                if (settings.GetSetting("check14", false) == true  && !selCid.Contains("-PPSA"))
                 {
                     PDL1.GetDlcInfo(titleRgn, Regex.Split(selCid, "/")[Information.UBound(Regex.Split(selCid, "/"))]);
                 }
@@ -779,66 +809,6 @@ namespace psDLC
         }
 
 
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
-        {
-            settings.SaveSetting("check1", checkBox1.Checked);
-        }
-
-        private void checkBox2_CheckedChanged(object sender, EventArgs e)
-        {
-            settings.SaveSetting("check2", checkBox2.Checked);
-        }
-
-        private void checkBox3_CheckedChanged(object sender, EventArgs e)
-        {
-            settings.SaveSetting("check3", checkBox3.Checked);
-        }
-
-        private void checkBox4_CheckedChanged(object sender, EventArgs e)
-        {
-            settings.SaveSetting("check4", checkBox4.Checked);
-        }
-
-        private void checkBox5_CheckedChanged(object sender, EventArgs e)
-        {
-            settings.SaveSetting("check5", checkBox5.Checked);
-        }
-
-        private void checkBox6_CheckedChanged(object sender, EventArgs e)
-        {
-            settings.SaveSetting("check6", checkBox6.Checked);
-        }
-
-        private void checkBox7_CheckedChanged(object sender, EventArgs e)
-        {
-            settings.SaveSetting("check7", checkBox7.Checked);
-        }
-
-        private void checkBox8_CheckedChanged(object sender, EventArgs e)
-        {
-            settings.SaveSetting("check8", checkBox8.Checked);
-        }
-
-        private void checkBox9_CheckedChanged(object sender, EventArgs e)
-        {
-            settings.SaveSetting("check9", checkBox9.Checked);
-        }
-
-        private void checkBox10_CheckedChanged(object sender, EventArgs e)
-        {
-            settings.SaveSetting("check10", checkBox10.Checked);
-        }
-
-        private void checkBox11_CheckedChanged(object sender, EventArgs e)
-        {
-            settings.SaveSetting("check11", checkBox11.Checked);
-        }
-
-        private void checkBox12_CheckedChanged(object sender, EventArgs e)
-        {
-            settings.SaveSetting("check12", checkBox12.Checked);
-        }
-
         private void checkBox13_CheckedChanged(object sender, EventArgs e)
         {
             settings.SaveSetting("check13", checkBox13.Checked);
@@ -850,57 +820,6 @@ namespace psDLC
         }
 
 
-        bool isAllowed(string cType)
-        {
-            switch (cType.ToLower())
-            {
-                case "add-on":
-                    if (settings.GetSetting("check1", true) != true) return false;
-                    break;
-                case "game video":
-                    if (settings.GetSetting("check2", true) != true) return false;
-                    break;
-                case "vehicle":
-                    if (settings.GetSetting("check3", true) != true) return false;
-                    break;
-                case "map":
-                    if (settings.GetSetting("check4", true) != true) return false;
-                    break;
-                case "bundle":
-                    if (settings.GetSetting("check5", true) != true) return false;
-                    break;
-                case "full game":
-                    if (settings.GetSetting("check6", true) != true) return false;
-                    break;
-                case "avatar":
-                    if (settings.GetSetting("check7", true) != true) return false;
-                    break;
-                case "avatars":
-                    if (settings.GetSetting("check7", true) != true) return false;
-                    break;
-                case "theme":
-                    if (settings.GetSetting("check8", true) != true) return false;
-                    break;
-                case "static theme":
-                    if (settings.GetSetting("check8", true) != true) return false;
-                    break;
-                case "dynamic theme":
-                    if (settings.GetSetting("check8", true) != true) return false;
-                    break;
-                case "season pass":
-                    if (settings.GetSetting("check9", true) != true) return false;
-                    break;
-                case "level":
-                    if (settings.GetSetting("check10", true) != true) return false;
-                    break;
-                case "character":
-                    if (settings.GetSetting("check11", true) != true) return false;
-                    break;
-                default:
-                    if (settings.GetSetting("check12", true) !=true) return false;
-                    break;
-            }
-            return true;
-        }
+ 
     }
 }
