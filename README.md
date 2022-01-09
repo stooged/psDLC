@@ -37,4 +37,4 @@ based on the python projects<br>
  <br>
  <br>
  
- compiled with <a href=https://visualstudio.microsoft.com/vs/community/>Visual Studio 2022 Community Edition</a>
+ compiled with <a href=https://visualstudio.microsoft.com/vs/community/>Visual Studio 2022 Community Edition</a> using <a href=https://dotnet.microsoft.com/en-us/download/dotnet-framework/net48>.Net Framework 4.8</a>
