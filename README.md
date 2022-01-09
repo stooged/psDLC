@@ -1,5 +1,12 @@
 # psDLC
+
+
+things have changed in relation to pkg scraping so this will only create packages to unlock content that is already in the game, if the content is absent then it will pretty much do nothing.
+
 <br>
+
+
+
 both formats of content id can be used or the ps store url.
 <br>
 
