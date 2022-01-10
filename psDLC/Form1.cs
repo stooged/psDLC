@@ -50,7 +50,7 @@ namespace psDLC
             textBox4.ForeColor = Color.Gray;
             textBox4.Text = "XX0000-CUSA00000_00-0000000000000000";
 
-            checkBox13.Checked = settings.GetSetting("check13", true);
+            checkBox13.Checked = settings.GetSetting("check13", false);
             checkBox14.Checked = settings.GetSetting("check14", true);
             ScaleForm();
         }
