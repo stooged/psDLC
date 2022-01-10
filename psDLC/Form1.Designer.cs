@@ -77,6 +77,7 @@
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.button5 = new System.Windows.Forms.Button();
             this.label12 = new System.Windows.Forms.Label();
+            this.button6 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -90,9 +91,9 @@
             this.Button1.Location = new System.Drawing.Point(497, 40);
             this.Button1.Margin = new System.Windows.Forms.Padding(2);
             this.Button1.Name = "Button1";
-            this.Button1.Size = new System.Drawing.Size(164, 32);
+            this.Button1.Size = new System.Drawing.Size(150, 32);
             this.Button1.TabIndex = 0;
-            this.Button1.Text = "Get DLC List";
+            this.Button1.Text = "Get DLC v1";
             this.Button1.UseVisualStyleBackColor = true;
             this.Button1.Click += new System.EventHandler(this.Button1_Click);
             // 
@@ -422,7 +423,7 @@
             this.panel2.Location = new System.Drawing.Point(12, 40);
             this.panel2.Margin = new System.Windows.Forms.Padding(2);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(706, 363);
+            this.panel2.Size = new System.Drawing.Size(596, 363);
             this.panel2.TabIndex = 12;
             this.panel2.Visible = false;
             // 
@@ -584,6 +585,19 @@
             this.label12.Text = "Manual Input";
             this.label12.Click += new System.EventHandler(this.label12_Click);
             // 
+            // button6
+            // 
+            this.button6.AutoSize = true;
+            this.button6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.142858F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button6.Location = new System.Drawing.Point(660, 40);
+            this.button6.Margin = new System.Windows.Forms.Padding(2);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(150, 32);
+            this.button6.TabIndex = 15;
+            this.button6.Text = "Get DLC v2";
+            this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.button6_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -601,6 +615,7 @@
             this.Controls.Add(this.LV1);
             this.Controls.Add(this.Button1);
             this.Controls.Add(this.linkLabel1);
+            this.Controls.Add(this.button6);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Form1";
@@ -670,6 +685,7 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Button button6;
     }
 }
 

@@ -30,7 +30,7 @@ namespace psDLC
         public string ImageErrorMessage { get; internal set; }
 
 
-        public void GetDlcList(string TitleID, string Region)
+        public void GetDlcList(string TitleID, string Region, bool tryV2 = false )
         {
             WebClient oWeb = new WebClient();
             oWeb.DownloadStringCompleted += new DownloadStringCompletedEventHandler(GetDlcList_DownloadStringCompleted);
@@ -43,6 +43,14 @@ namespace psDLC
                 TitleID = TitleID.ToLower().Replace("_00", "");
                 TitleID = TitleID.Replace("ppsa", "");
                 oWeb.DownloadStringAsync(new Uri("https://serialstation.com/titles/PPSA/" + TitleID));
+            }
+            if (TitleID.ToLower().StartsWith("cusa") && tryV2)
+            {
+                oWeb.Headers.Add("Accept", "text/html");
+                oWeb.Headers.Add("Referer", "https://serialstation.com");
+                TitleID = TitleID.ToLower().Replace("_00", "");
+                TitleID = TitleID.Replace("cusa", "");
+                oWeb.DownloadStringAsync(new Uri("https://serialstation.com/titles/CUSA/" + TitleID));
             }
             else if (TitleID.ToLower().StartsWith("cusa"))
             {

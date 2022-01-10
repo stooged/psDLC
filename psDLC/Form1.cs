@@ -67,8 +67,9 @@ namespace psDLC
 
         void ScaleForm()
         {
-            textBox1.Width = Width - Button1.Width - Button3.Width - 100;
+            textBox1.Width = Width - Button1.Width - Button3.Width - button6.Width - 100;
             Button1.Left = textBox1.Right + 3;
+            button6.Left = Button1.Right + 3;
             LV1.Width = Width - 33;
             LV1.Height = Height - textBox2.Height - 135;
             panel1.Width = LV1.Width;
@@ -155,6 +156,13 @@ namespace psDLC
                 LV1.BeginUpdate();
                 LV1.Items.Clear();
 
+                if (PlData.Contains("<h1>"))
+                {
+                    Spl1 = Regex.Split(PlData, "<h1>");
+                    Spl2 = Regex.Split(Spl1[1], "</h1>");
+                    Text = WebUtility.HtmlDecode(Spl2[0].Trim());
+                }
+
                 Spl1 = Regex.Split(PlData, "\">Content</");
                 Spl2 = Regex.Split(Spl1[1], "</table>");
 
@@ -163,7 +171,7 @@ namespace psDLC
                 for (int i = 1; i < Spl1.Length; i++)
                 {
 
-                    if (Spl1[i].Contains("<td>DLC</td>") || Spl1[i].Contains("<td>Avatar</td>"))
+                    if (Spl1[i].Contains("<td>DLC</td>") || Spl1[i].Contains("<td>Avatar</td>") || Spl1[i].Contains("<td>Theme</td>") || Spl1[i].Contains("<td>Unknown</td>"))
                     {
 
                         Spl3 = Regex.Split(Spl1[i], ">");
@@ -721,6 +729,71 @@ namespace psDLC
             }
         }
 
+        private void button6_Click(object sender, EventArgs e)
+        {
+            if (text1Hint == false)
+            {
+                string[] Spl1, Spl2;
+                LV1.Items.Clear();
+                textBox2.Clear();
+                Button2.Visible = false;
+                Button3.Visible = false;
+                linkLabel1.Text = "";
+                Text = "psDLC";
+                textBox1.SelectionStart = textBox1.Text.Length;
+                textBox1.SelectionLength = 0;
+                
+                if (textBox1.Text.Length == 9 && textBox1.Text.ToLower().StartsWith("cusa"))
+                {
+                    textBox1.Text = textBox1.Text.ToUpper();
+                    PDL1.GetDlcList(textBox1.Text, "", true);
+                }
+                else if (textBox1.Text.StartsWith("http") && textBox1.Text.Contains(".com/") && textBox1.Text.Contains("/product/") && textBox1.Text.ToLower().Contains("cusa") && textBox1.Text.Length > 36)
+                {
+                    htmBuffer = string.Empty;
+                    Spl1 = Regex.Split(textBox1.Text, ".com/");
+                    Spl2 = Regex.Split(Spl1[1], "/");
+                    titleRgn = Spl2[0];
+                    Spl1 = Regex.Split(textBox1.Text, "/product/");
+                    titleID = Spl1[1].Substring(7, 12);
+
+                    textBox1.Text = Spl1[1].Substring(7, 9);
+
+                    PDL1.GetDlcList(titleID, titleRgn, true);
+                }
+                else if (textBox1.Text.Length >= 19 && textBox1.Text.ToLower().Contains("cusa"))
+                {
+                    textBox1.Text = textBox1.Text.ToUpper();
+                    htmBuffer = string.Empty;
+                    titleID = textBox1.Text.Substring(7, 12);
+                    switch (textBox1.Text.Substring(0, 1))
+                    {
+                        case "U":
+                            titleRgn = "en-us";
+                            break;
+                        case "E":
+                            titleRgn = "en-gb";
+                            break;
+                        case "I":
+                            titleRgn = "en-us";
+                            break;
+                        default:
+                            titleRgn = "ja-jp";
+                            break;
+                    }
+                    textBox1.Text = textBox1.Text.Substring(7, 9);
+
+                    PDL1.GetDlcList(titleID, titleRgn,true);
+                }
+
+
+
+                else
+                {
+                    Button1.PerformClick();
+                }
+            }
+        }
 
         private void LV1_SelectedIndexChanged(object sender, EventArgs e)
         {
