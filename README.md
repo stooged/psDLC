@@ -48,6 +48,10 @@ to create fake packages you will need the <a href=https://github.com/CyB1K/PS4-F
 
 place the fake package tools in the same directory as this program(<b>psDLC.exe</b>)
 
+<br>
+<br>
+
+compiled with <a href=https://visualstudio.microsoft.com/vs/community/>Visual Studio 2022 Community Edition</a> using <a href=https://dotnet.microsoft.com/en-us/download/dotnet-framework/net48>.Net Framework 4.8</a>
 
 <br>
 <br>
@@ -58,6 +62,10 @@ based on the python projects<br>
  https://gist.github.com/Zer0xFF/d94818f15e3e85b0b4d48000a4be1c73
  
  <br>
+ 
+some data is provided by<br>
+ https://serialstation.com/
+ 
  <br>
  
- compiled with <a href=https://visualstudio.microsoft.com/vs/community/>Visual Studio 2022 Community Edition</a> using <a href=https://dotnet.microsoft.com/en-us/download/dotnet-framework/net48>.Net Framework 4.8</a>
+
