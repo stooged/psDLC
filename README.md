@@ -6,6 +6,8 @@ things have changed in relation to pkg scraping so this will only create package
 <br>
 
 
+you can search for games by name or enter the game id in the formats below.
+
 
 both formats of content id can be used or the ps store url.
 <br>

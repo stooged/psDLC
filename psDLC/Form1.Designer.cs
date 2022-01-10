@@ -78,6 +78,8 @@
             this.button5 = new System.Windows.Forms.Button();
             this.label12 = new System.Windows.Forms.Label();
             this.button6 = new System.Windows.Forms.Button();
+            this.button7 = new System.Windows.Forms.Button();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -155,9 +157,7 @@
             this.textBox1.Size = new System.Drawing.Size(480, 30);
             this.textBox1.TabIndex = 4;
             this.textBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.textBox1.Enter += new System.EventHandler(this.textBox1_Enter);
             this.textBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox1_KeyPress);
-            this.textBox1.Leave += new System.EventHandler(this.textBox1_Leave);
             // 
             // textBox2
             // 
@@ -598,11 +598,41 @@
             this.button6.UseVisualStyleBackColor = true;
             this.button6.Click += new System.EventHandler(this.button6_Click);
             // 
+            // button7
+            // 
+            this.button7.AutoSize = true;
+            this.button7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.142858F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button7.Location = new System.Drawing.Point(791, 535);
+            this.button7.Margin = new System.Windows.Forms.Padding(2);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(132, 32);
+            this.button7.TabIndex = 16;
+            this.button7.Text = "Load DLC";
+            this.button7.UseVisualStyleBackColor = true;
+            this.button7.Visible = false;
+            this.button7.Click += new System.EventHandler(this.button7_Click);
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Items.AddRange(new object[] {
+            "en-us",
+            "en-gb",
+            "ja-jp"});
+            this.comboBox1.Location = new System.Drawing.Point(815, 42);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(88, 28);
+            this.comboBox1.TabIndex = 17;
+            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1073, 789);
+            this.Controls.Add(this.button7);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.label12);
             this.Controls.Add(this.panel3);
@@ -616,6 +646,7 @@
             this.Controls.Add(this.Button1);
             this.Controls.Add(this.linkLabel1);
             this.Controls.Add(this.button6);
+            this.Controls.Add(this.comboBox1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Form1";
@@ -686,6 +717,8 @@
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.Button button7;
+        private System.Windows.Forms.ComboBox comboBox1;
     }
 }
 

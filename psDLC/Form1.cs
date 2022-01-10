@@ -17,9 +17,9 @@ namespace psDLC
         private Settings settings = new Settings();
 
         String htmBuffer, titleID, titleRgn, selName, selCid, selManifest, selImg;
-        Boolean text1Hint;
         Boolean text3Hint;
         Boolean text4Hint;
+        Boolean isSearch = false;
 
         public Form1()
         {
@@ -39,10 +39,9 @@ namespace psDLC
             PDL1.DlcInfoError += DlcInfoError;
             PDL1.GotImage += GotImage;
             PDL1.ImageError += ImageError;
+            PDL1.GotSearch += GotSearch;
+            PDL1.SearchDataError += SearchDataError;
 
-            text1Hint = true;
-            textBox1.ForeColor = Color.Gray;
-            textBox1.Text = "CUSA00000";
             text3Hint = true;
             textBox3.ForeColor = Color.Gray;
             textBox3.Text = "Display Name For DLC";
@@ -52,6 +51,9 @@ namespace psDLC
 
             checkBox13.Checked = settings.GetSetting("check13", false);
             checkBox14.Checked = settings.GetSetting("check14", true);
+
+            comboBox1.Text = settings.GetSetting("region", "en-us");
+
             ScaleForm();
         }
 
@@ -67,8 +69,9 @@ namespace psDLC
 
         void ScaleForm()
         {
-            textBox1.Width = Width - Button1.Width - Button3.Width - button6.Width - 100;
-            Button1.Left = textBox1.Right + 3;
+            textBox1.Width = Width - comboBox1.Width - Button1.Width - Button3.Width - button6.Width - 100;
+            comboBox1.Left = textBox1.Right + 3;
+            Button1.Left = comboBox1.Right + 3;
             button6.Left = Button1.Right + 3;
             LV1.Width = Width - 33;
             LV1.Height = Height - textBox2.Height - 135;
@@ -89,6 +92,8 @@ namespace psDLC
             Button3.Left = LV1.Right - Button3.Width;
             textBox2.Top = Button2.Bottom + 8;
             textBox2.Width = Width - 33;
+            button7.Top = Button2.Top;
+            button7.Left = Button2.Left;
         }
 
 
@@ -113,7 +118,7 @@ namespace psDLC
                 for (int i = 1; i < Spl1.Length; i++)
                 {
 
-                    if (Spl1[i].Contains("\"top_category\":\"add_on\""))
+                    if (Spl1[i].Contains("\"top_category\":\"add_on\"") || Spl1[i].Contains("\"top_category\":\"avatar\"") || Spl1[i].Contains("\"top_category\":\"theme\"") || Spl1[i].Contains("\"top_category\":\"game_content\""))
                     {
 
                         Spl3 = Regex.Split(Spl1[i], "\"name\":\"");
@@ -142,7 +147,10 @@ namespace psDLC
                         Spl3 = Regex.Split(Spl1[i], "\"url\":\"");
                         Spl4 = Regex.Split(Spl3[1], "\"");
                         TmpImgUrl = Spl4[0].Trim();
-                        TmpType = "";
+
+                        Spl3 = Regex.Split(Spl1[i], "\"top_category\":\"");
+                        Spl4 = Regex.Split(Spl3[1], "\"");
+                        TmpType = Spl4[0].Trim().ToUpper();
                         TmpPlatForm = "";
                         string[] TmpItem = { TmpTitle, TmpType, TmpPlatForm, TmpURL, TmpImgUrl };
                         var LvItem = new ListViewItem(TmpItem);
@@ -198,7 +206,10 @@ namespace psDLC
                         }
                         TmpURL = "https://store.playstation.com/" + titleRgn + "/product/" + Spl4[0].Trim();
                         TmpImgUrl = "";
-                        TmpType = "";
+                        TmpType = "Unknown";
+                        if (Spl1[i].Contains("<td>DLC</td>")) { TmpType = "DLC"; }
+                        if (Spl1[i].Contains("<td>Avatar</td>") ) { TmpType = "Avatar"; }
+                        if (Spl1[i].Contains("<td>Theme</td>") ) { TmpType = "Theme"; }
                         TmpPlatForm = "";
                         string[] TmpItem = { TmpTitle, TmpType, TmpPlatForm, TmpURL, TmpImgUrl };
                         var LvItem = new ListViewItem(TmpItem);
@@ -316,7 +327,7 @@ namespace psDLC
 
             Spl1 = Regex.Split(PlData, "\"size\":");
             Spl2 = Regex.Split(Spl1[1], ",");
-            fsData = Spl2[0].Trim();
+            fsData = Spl2[0].Trim().Replace("}]",""); ;
 
 
             Spl1 = Regex.Split(PlData, "\"game_contentType\":\"");
@@ -360,6 +371,71 @@ namespace psDLC
         }
 
 
+        void GotSearch(object sender, PDL e)
+        {
+            string PlData = e.SearchData;
+            string[] Spl1, Spl3, Spl4;
+            string TmpTitle, TmpURL, TmpImgUrl, TmpID, TmpPlatForm;
+
+            if (PlData.Contains("\"default_sku\":"))
+            {
+                LV1.BeginUpdate();
+                LV1.Items.Clear();
+                Spl1 = Regex.Split(PlData, "\"default_sku\":");
+
+                for (int i = 1; i < Spl1.Length; i++)
+                {
+
+                    if (Spl1[i].Contains("\"top_category\":\"downloadable_game\""))
+                    {
+                        Spl3 = Regex.Split(Spl1[i], "\"name\":\"");
+                        Spl4 = Regex.Split(Spl3[1], "\"");
+                        TmpTitle = Spl4[0].Trim();
+                        TmpTitle = WebUtility.HtmlDecode(TmpTitle);
+                        TmpTitle = Regex.Replace(TmpTitle, "[^a-zA-Z0-9 -<>&,]", "");
+                        Spl3 = Regex.Split(Spl1[i], "/999/");
+                        Spl4 = Regex.Split(Spl3[1], "/");
+                        switch (Spl4[0].Trim().Substring(0, 1))
+                        {
+                            case "U":
+                                titleRgn = "en-us";
+                                break;
+                            case "E":
+                                titleRgn = "en-gb";
+                                break;
+                            case "I":
+                                titleRgn = "en-us";
+                                break;
+                            default:
+                                titleRgn = "ja-jp";
+                                break;
+                        }
+                        TmpURL = "https://store.playstation.com/" + titleRgn + "/product/" + Spl4[0].Trim();
+                        TmpID = "GAME";
+                        Spl3 = Regex.Split(Spl1[i], "\"url\":\"");
+                        Spl4 = Regex.Split(Spl3[1], "\"");
+                        TmpImgUrl = Spl4[0].Trim();
+                        TmpPlatForm = "";
+                        string[] TmpItem = { TmpTitle, TmpID, TmpPlatForm, TmpURL, TmpImgUrl };
+                        var LvItem = new ListViewItem(TmpItem);
+                        LV1.Items.Add(LvItem);
+                    }
+                }
+                LV1.EndUpdate();
+            }
+            else
+            {
+                AppLog("Nothing found in search.");
+            }
+        }
+
+
+        void SearchDataError(object sender, PDL e)
+        {
+            AppLog("ERROR: " + e.SearchDataErrorMessage);
+        }
+
+
         void GotImage(object sender, PDL e)
         {
             string imagePath = AppDomain.CurrentDomain.BaseDirectory + "fake_dlc_temp/sce_sys/icon0";
@@ -381,7 +457,9 @@ namespace psDLC
     
         private void Button1_Click(object sender, EventArgs e)
         {
-            if (text1Hint == false)
+            button7.Visible = false;
+            isSearch = false;
+            if (textBox1.Text != String.Empty)
             {
                 string[] Spl1, Spl2;
                 LV1.Items.Clear();
@@ -449,7 +527,8 @@ namespace psDLC
                 }
                 else
                 {
-                    AppLog("ERROR: Invalid Content ID" + Environment.NewLine + "Use the content id in the following formats:\r\n CUSA00000 \r\nor\r\n XX0000-CUSA00000_00-0000000000000000 \r\nor\r\n PS Store URL: https://store.playstation.com/xx-xx/product/XX0000-CUSA00000_00-0000000000000000");
+                    isSearch = true;
+                    PDL1.GetSearch(textBox1.Text, comboBox1.Text);
                 }
             }
         }
@@ -457,6 +536,7 @@ namespace psDLC
 
         private void Button2_Click(object sender, EventArgs e)
         {
+            button7.Visible = false;
             panel2.Visible = false;
             label4.Text = "";
             label5.Text = "";
@@ -654,34 +734,12 @@ namespace psDLC
         }
 
 
-        private void textBox1_Enter(object sender, EventArgs e)
-        {
-            if (text1Hint)
-            {
-                text1Hint = false;
-                textBox1.Text = "";
-                textBox1.ForeColor = Color.Black;
-            }
-        }
-
-
         private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == 13)
             {
                 Button1.PerformClick();
                 e.Handled = true;
-            }
-        }
-
-
-        private void textBox1_Leave(object sender, EventArgs e)
-        {
-            if (!text1Hint && string.IsNullOrEmpty(textBox1.Text))
-            {
-                text1Hint = true;
-                textBox1.Text = "CUSA00000";
-                textBox1.ForeColor = Color.Gray;
             }
         }
 
@@ -731,7 +789,9 @@ namespace psDLC
 
         private void button6_Click(object sender, EventArgs e)
         {
-            if (text1Hint == false)
+            button7.Visible = false;
+            isSearch = false;
+            if (textBox1.Text != String.Empty)
             {
                 string[] Spl1, Spl2;
                 LV1.Items.Clear();
@@ -785,14 +845,23 @@ namespace psDLC
 
                     PDL1.GetDlcList(titleID, titleRgn,true);
                 }
-
-
-
                 else
                 {
                     Button1.PerformClick();
                 }
             }
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            panel2.Visible = false;
+            textBox1.Text = selCid;
+            Button1.PerformClick();
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            settings.SaveSetting("region", comboBox1.Text);
         }
 
         private void LV1_SelectedIndexChanged(object sender, EventArgs e)
@@ -802,6 +871,19 @@ namespace psDLC
             if (LvItem != null)
             {
                 textBox2.Clear();
+
+                if (isSearch)
+                {
+                    Button2.Visible = false;
+                    button7.Visible = true;
+                }
+                else
+                {
+                    button7.Visible = false;
+                    Button2.Visible = true;
+                }
+
+
                 if (!LvItem.SubItems[3].Text.Contains("-PPSA"))
                 {
                     linkLabel1.Text = LvItem.SubItems[3].Text;
@@ -813,8 +895,9 @@ namespace psDLC
                 selName = LvItem.Text;
                 selCid = LvItem.SubItems[3].Text;
                 selImg = LvItem.SubItems[4].Text;
-                Button2.Visible = true;
-                if (settings.GetSetting("check14", false) == true  && !selCid.Contains("-PPSA"))
+
+
+                if (settings.GetSetting("check14", false) == true && !selCid.Contains("-PPSA"))
                 {
                     PDL1.GetDlcInfo(titleRgn, Regex.Split(selCid, "/")[Regex.Split(selCid, "/").Length - 1]);
                 }

@@ -2,6 +2,7 @@
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
+using System.Web;
 
 namespace psDLC
 {
@@ -18,6 +19,8 @@ namespace psDLC
         public event EventHandler<PDL> DlcInfoError;
         public event EventHandler<PDL> GotImage;
         public event EventHandler<PDL> ImageError;
+        public event EventHandler<PDL> GotSearch;
+        public event EventHandler<PDL> SearchDataError;
 
         public string DlcListData { get; internal set; }
         public string DlcListErrorMessage { get; internal set; }
@@ -28,10 +31,13 @@ namespace psDLC
         public string DlcInfoData { get; internal set; }
         public string DlcInfoErrorMessage { get; internal set; }
         public string ImageErrorMessage { get; internal set; }
+        public string SearchData { get; internal set; }
+        public string SearchDataErrorMessage { get; internal set; }
 
 
         public void GetDlcList(string TitleID, string Region, bool tryV2 = false )
         {
+            if (Region == String.Empty) { Region = "en-us"; }
             WebClient oWeb = new WebClient();
             oWeb.DownloadStringCompleted += new DownloadStringCompletedEventHandler(GetDlcList_DownloadStringCompleted);
             oWeb.Headers.Add("Accept-Language", "en-US");
@@ -56,13 +62,13 @@ namespace psDLC
             {
                 oWeb.Headers.Add("Accept", "application/json");
                 oWeb.Headers.Add("Referer", "https://store.playstation.com/");
-                oWeb.DownloadStringAsync(new Uri("https://store.playstation.com/store/api/chihiro/00_09_000/titlecontainer/" + Region.Substring(3, 2).ToUpper() + "/" + Region.Substring(0, 2) + "/999/" + TitleID + "/?relationship=ADD-ONS"));
+                oWeb.DownloadStringAsync(new Uri("https://store.playstation.com/store/api/chihiro/00_09_000/titlecontainer/" + Region.Substring(3, 2).ToUpper() + "/" + Region.Substring(0, 2) + "/999/" + TitleID));
             }
             else if (TitleID.ToLower().StartsWith("up") || TitleID.ToLower().StartsWith("ep"))
             {
                 oWeb.Headers.Add("Accept", "application/json");
                 oWeb.Headers.Add("Referer", "https://store.playstation.com/");
-                oWeb.DownloadStringAsync(new Uri("https://store.playstation.com/store/api/chihiro/00_09_000/container/" + Region.Substring(3, 2).ToUpper() + "/" + Region.Substring(0, 2) + "/999/" + TitleID + "/?relationship=ADD-ONS"));
+                oWeb.DownloadStringAsync(new Uri("https://store.playstation.com/store/api/chihiro/00_09_000/container/" + Region.Substring(3, 2).ToUpper() + "/" + Region.Substring(0, 2) + "/999/" + TitleID));
             }
         }
 
@@ -101,6 +107,7 @@ namespace psDLC
 
         public void GetDlcInfo(string Region, string contentID)
         {
+            if (Region == String.Empty) { Region = "en-us"; }
             WebClient oWeb = new WebClient();
             oWeb.DownloadStringCompleted += new DownloadStringCompletedEventHandler(GetDlcInfo_DownloadStringCompleted);
             oWeb.Headers.Add("Referer", "https://store.playstation.com");
@@ -121,6 +128,19 @@ namespace psDLC
             oWeb.Headers.Add("Accept-Language", "en-US");
             oWeb.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64)");
             oWeb.DownloadFileAsync(new Uri(strUrl), fPath);
+        }
+
+
+        public void GetSearch(string strQry, string Region)
+        {
+            if (Region == String.Empty) { Region = "en-us"; }
+            WebClient oWeb = new WebClient();
+            oWeb.DownloadStringCompleted += new DownloadStringCompletedEventHandler(GetSearch_DownloadStringCompleted);
+            oWeb.Headers.Add("Referer", "https://store.playstation.com");
+            oWeb.Headers.Add("Accept", "application/json");
+            oWeb.Headers.Add("Accept-Language", "en-US");
+            oWeb.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64)");
+            oWeb.DownloadStringAsync(new Uri("https://store.playstation.com/store/api/chihiro/00_09_000/search/" + Region.Substring(3, 2).ToUpper() + "/" + Region.Substring(0, 2) + "/999/" + HttpUtility.UrlEncode(strQry)));
         }
 
 
@@ -238,5 +258,29 @@ namespace psDLC
                 ImageError(this, DataEvent);
             }
         }
+
+
+        void GetSearch_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
+        {
+            PDL DataEvent = new PDL();
+            try
+            {
+                DataEvent.SearchData = e.Result;
+                GotSearch(this, DataEvent);
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    DataEvent.SearchDataErrorMessage = ex.InnerException.Message;
+                }
+                else
+                {
+                    DataEvent.SearchDataErrorMessage = ex.Message;
+                }
+                SearchDataError(this, DataEvent);
+            }
+        }
+
     }
 }
