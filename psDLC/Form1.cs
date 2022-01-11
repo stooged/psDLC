@@ -109,11 +109,11 @@ namespace psDLC
             string[] Spl1, Spl2, Spl3, Spl4;
             string TmpTitle, TmpURL, TmpImgUrl, TmpType, TmpPlatForm;
 
-            if (PlData.Contains("\"default_sku\":"))
+            if (PlData.Contains("{\"bucket\":\""))
             {
                 LV1.BeginUpdate();
                 LV1.Items.Clear();
-                Spl1 = Regex.Split(PlData, "\"default_sku\":");
+                Spl1 = Regex.Split(PlData, "{\"bucket\":\"");
 
                 for (int i = 1; i < Spl1.Length; i++)
                 {
@@ -121,7 +121,7 @@ namespace psDLC
                     if (Spl1[i].Contains("\"top_category\":\"add_on\"") || Spl1[i].Contains("\"top_category\":\"avatar\"") || Spl1[i].Contains("\"top_category\":\"theme\"") || Spl1[i].Contains("\"top_category\":\"game_content\""))
                     {
 
-                        Spl3 = Regex.Split(Spl1[i], "\"name\":\"");
+                        Spl3 = Regex.Split(Spl1[i], ",\"name\":\"");
                         Spl4 = Regex.Split(Spl3[1], "\"");
                         TmpTitle = Spl4[0].Trim();
                         TmpTitle = WebUtility.HtmlDecode(TmpTitle);
@@ -316,51 +316,57 @@ namespace psDLC
             string PlData = e.DlcInfoData, fsData, dlcDesc, dlcType, dlcImgUrl, dlcPlatfrm;
             string[] Spl1, Spl2;
 
-            Spl1 = Regex.Split(PlData.Replace("\\\"", "'"), "\"long_desc\":\"");
-            Spl2 = Regex.Split(Spl1[1], "\"");
-            dlcDesc = Spl2[0].Trim();
-            dlcDesc = WebUtility.HtmlDecode(dlcDesc);
-            dlcDesc = Regex.Replace(dlcDesc, "[^a-zA-Z0-9 -<>&,]", "");
-            dlcDesc = Regex.Replace(dlcDesc, "<br>", "\n");
-            dlcDesc = Regex.Replace(dlcDesc, "<.*?>", "");
-
-
-            Spl1 = Regex.Split(PlData, "\"size\":");
-            Spl2 = Regex.Split(Spl1[1], ",");
-            fsData = Spl2[0].Trim().Replace("}]",""); ;
-
-
-            Spl1 = Regex.Split(PlData, "\"game_contentType\":\"");
-            Spl2 = Regex.Split(Spl1[1], "\"");
-            dlcType = Spl2[0].Trim();
-            dlcType = WebUtility.HtmlDecode(dlcType);
-
-
-            Spl1 = Regex.Split(PlData, "\"images\":");
-            Spl1 = Regex.Split(Spl1[1], "\"url\":\"");
-            Spl2 = Regex.Split(Spl1[1], "\"");
-            dlcImgUrl = Spl2[0].Trim();
-
-
-            Spl1 = Regex.Split(PlData, "\"platforms\":\\[");
-            Spl2 = Regex.Split(Spl1[1], "\\]");
-            dlcPlatfrm = Spl2[0].Trim();
-            dlcPlatfrm = WebUtility.HtmlDecode(dlcPlatfrm);
-
-            pictureBox1.ImageLocation = dlcImgUrl;
-            pictureBox1.LoadAsync();
-
-            label4.Text = dlcDesc.Replace("<br>","\n");
-            label5.Text = "Size: " + fsData;
-
-            if (dlcType == "null" || String.IsNullOrEmpty(dlcType))
+            if (PlData.Contains("\"default_sku\""))
             {
-                dlcType = "Unknown";
-            }
-            label6.Text = "Type: " + dlcType;
-            label7.Text = "Platform: " + dlcPlatfrm.Replace("\"","");
+                Spl1 = Regex.Split(PlData.Replace("\\\"", "'"), "\"long_desc\":\"");
+                Spl2 = Regex.Split(Spl1[1], "\"");
+                dlcDesc = Spl2[0].Trim();
+                dlcDesc = dlcDesc.Replace("\\r", "");
+                dlcDesc = dlcDesc.Replace("\\n", "");
+                dlcDesc = WebUtility.HtmlDecode(dlcDesc);
+                dlcDesc = Regex.Replace(dlcDesc, "[^a-zA-Z0-9 -<>&,]", "");
+                dlcDesc = Regex.Replace(dlcDesc, "<br>", "\n");
+                dlcDesc = Regex.Replace(dlcDesc, "<.*?>", "");
 
-            panel2.Visible = true;
+                Spl1 = Regex.Split(PlData, "\"size\":");
+                Spl2 = Regex.Split(Spl1[1], ",");
+                fsData = Spl2[0].Trim().Replace("}]", ""); ;
+
+                Spl1 = Regex.Split(PlData, "\"game_contentType\":\"");
+                Spl2 = Regex.Split(Spl1[1], "\"");
+                dlcType = Spl2[0].Trim();
+                dlcType = WebUtility.HtmlDecode(dlcType);
+
+                Spl1 = Regex.Split(PlData, "\"images\":");
+                Spl1 = Regex.Split(Spl1[1], "\"url\":\"");
+                Spl2 = Regex.Split(Spl1[1], "\"");
+                dlcImgUrl = Spl2[0].Trim();
+
+                Spl1 = Regex.Split(PlData, "\"playable_platform\",\"values\":\\[");
+                Spl2 = Regex.Split(Spl1[1], "\\]");
+                dlcPlatfrm = Spl2[0].Trim();
+                dlcPlatfrm = Regex.Replace(dlcPlatfrm, "[^a-zA-Z0-9 -<>&,]", "");
+                dlcPlatfrm = Regex.Replace(dlcPlatfrm, "\"", "");
+
+                pictureBox1.ImageLocation = dlcImgUrl;
+                pictureBox1.LoadAsync();
+
+                label4.Text = dlcDesc.Replace("<br>", "\n");
+                label5.Text = "Size: " + FileSize(fsData);
+
+                if (dlcType == "null" || String.IsNullOrEmpty(dlcType))
+                {
+                    dlcType = "Unknown";
+                }
+                label6.Text = "Type: " + dlcType;
+                label7.Text = "Platform: " + dlcPlatfrm;
+
+                panel2.Visible = true;
+            }
+            else
+            {
+                AppLog("No dlc information");
+            }
         }
 
 
@@ -377,18 +383,18 @@ namespace psDLC
             string[] Spl1, Spl3, Spl4;
             string TmpTitle, TmpURL, TmpImgUrl, TmpID, TmpPlatForm;
 
-            if (PlData.Contains("\"default_sku\":"))
+            if (PlData.Contains("{\"bucket\":\""))
             {
                 LV1.BeginUpdate();
                 LV1.Items.Clear();
-                Spl1 = Regex.Split(PlData, "\"default_sku\":");
+                Spl1 = Regex.Split(PlData, "{\"bucket\":\"");
 
                 for (int i = 1; i < Spl1.Length; i++)
                 {
 
                     if (Spl1[i].Contains("\"top_category\":\"downloadable_game\""))
                     {
-                        Spl3 = Regex.Split(Spl1[i], "\"name\":\"");
+                        Spl3 = Regex.Split(Spl1[i], "\"short_name\":\"");
                         Spl4 = Regex.Split(Spl3[1], "\"");
                         TmpTitle = Spl4[0].Trim();
                         TmpTitle = WebUtility.HtmlDecode(TmpTitle);
@@ -412,6 +418,7 @@ namespace psDLC
                         }
                         TmpURL = "https://store.playstation.com/" + titleRgn + "/product/" + Spl4[0].Trim();
                         TmpID = "GAME";
+
                         Spl3 = Regex.Split(Spl1[i], "\"url\":\"");
                         Spl4 = Regex.Split(Spl3[1], "\"");
                         TmpImgUrl = Spl4[0].Trim();
@@ -419,6 +426,20 @@ namespace psDLC
                         string[] TmpItem = { TmpTitle, TmpID, TmpPlatForm, TmpURL, TmpImgUrl };
                         var LvItem = new ListViewItem(TmpItem);
                         LV1.Items.Add(LvItem);
+
+                        if (Spl1[i].Contains("-CUSA") && TmpURL.Contains("-PPSA"))
+                        {
+                            Spl3 = Regex.Split(Spl1[i], "-CUSA");
+                            Spl4 = Regex.Split(Spl3[1], "_00");
+                            String cusaId = Spl4[0].Trim();
+                            Spl3 = Regex.Split(TmpURL, "-PPSA");
+                            Spl4 = Regex.Split(Spl3[1], "_00");
+                            String ppsaId = Spl4[0].Trim();
+                            TmpURL = TmpURL.Replace("-PPSA" + ppsaId, "-CUSA" + cusaId);
+                            string[] TmpItem1 = { TmpTitle + " [CUSA" + cusaId + "]", TmpID, TmpPlatForm, TmpURL, TmpImgUrl };
+                            var LvItem1 = new ListViewItem(TmpItem1);
+                            LV1.Items.Add(LvItem1);
+                        }
                     }
                 }
                 LV1.EndUpdate();
@@ -470,7 +491,7 @@ namespace psDLC
                 Text = "psDLC";  
                 textBox1.SelectionStart = textBox1.Text.Length;
                 textBox1.SelectionLength = 0;
-
+                if (textBox1.Text.Length == 12 && textBox1.Text.EndsWith("_00")) { textBox1.Text = textBox1.Text.Substring(0, textBox1.Text.Length - 3);}
                 if (textBox1.Text.Length == 9 && textBox1.Text.ToLower().Contains("cusa"))
                 {
                     textBox1.Text = textBox1.Text.ToUpper();
@@ -479,7 +500,7 @@ namespace psDLC
                 else if (textBox1.Text.Length == 9 && textBox1.Text.ToLower().Contains("ppsa"))
                 {
                     textBox1.Text = textBox1.Text.ToUpper();
-                    PDL1.GetDlcList(textBox1.Text,"");
+                    PDL1.GetDlcList(textBox1.Text,comboBox1.Text);
                 }
                 else if (textBox1.Text.StartsWith("http") && textBox1.Text.Contains(".com/") && textBox1.Text.Contains("/product/") && textBox1.Text.ToLower().Contains("cusa") && textBox1.Text.Length > 36)
                 {
@@ -532,6 +553,75 @@ namespace psDLC
                 }
             }
         }
+
+
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            button7.Visible = false;
+            isSearch = false;
+            if (textBox1.Text != String.Empty)
+            {
+                string[] Spl1, Spl2;
+                LV1.Items.Clear();
+                textBox2.Clear();
+                Button2.Visible = false;
+                Button3.Visible = false;
+                linkLabel1.Text = "";
+                Text = "psDLC";
+                textBox1.SelectionStart = textBox1.Text.Length;
+                textBox1.SelectionLength = 0;
+                if (textBox1.Text.Length == 12 && textBox1.Text.EndsWith("_00")) { textBox1.Text = textBox1.Text.Substring(0, textBox1.Text.Length - 3); }
+                if (textBox1.Text.Length == 9 && textBox1.Text.ToLower().StartsWith("cusa") || textBox1.Text.ToLower().StartsWith("ppsa"))
+                {
+                    textBox1.Text = textBox1.Text.ToUpper();
+                    PDL1.GetDlcList(textBox1.Text, "", true);
+                }
+                else if (textBox1.Text.StartsWith("http") && textBox1.Text.Contains(".com/") && textBox1.Text.Contains("/product/") && textBox1.Text.ToLower().Contains("cusa") && textBox1.Text.Length > 36)
+                {
+                    htmBuffer = string.Empty;
+                    Spl1 = Regex.Split(textBox1.Text, ".com/");
+                    Spl2 = Regex.Split(Spl1[1], "/");
+                    titleRgn = Spl2[0];
+                    Spl1 = Regex.Split(textBox1.Text, "/product/");
+                    titleID = Spl1[1].Substring(7, 12);
+
+                    textBox1.Text = Spl1[1].Substring(7, 9);
+
+                    PDL1.GetDlcList(titleID, titleRgn, true);
+                }
+                else if (textBox1.Text.Length >= 19 && textBox1.Text.ToLower().Contains("cusa"))
+                {
+                    textBox1.Text = textBox1.Text.ToUpper();
+                    htmBuffer = string.Empty;
+                    titleID = textBox1.Text.Substring(7, 12);
+                    switch (textBox1.Text.Substring(0, 1))
+                    {
+                        case "U":
+                            titleRgn = "en-us";
+                            break;
+                        case "E":
+                            titleRgn = "en-gb";
+                            break;
+                        case "I":
+                            titleRgn = "en-us";
+                            break;
+                        default:
+                            titleRgn = "ja-jp";
+                            break;
+                    }
+                    textBox1.Text = textBox1.Text.Substring(7, 9);
+
+                    PDL1.GetDlcList(titleID, titleRgn, true);
+                }
+                else
+                {
+                    Button1.PerformClick();
+                }
+            }
+        }
+
+
 
 
         private void Button2_Click(object sender, EventArgs e)
@@ -787,71 +877,6 @@ namespace psDLC
             }
         }
 
-        private void button6_Click(object sender, EventArgs e)
-        {
-            button7.Visible = false;
-            isSearch = false;
-            if (textBox1.Text != String.Empty)
-            {
-                string[] Spl1, Spl2;
-                LV1.Items.Clear();
-                textBox2.Clear();
-                Button2.Visible = false;
-                Button3.Visible = false;
-                linkLabel1.Text = "";
-                Text = "psDLC";
-                textBox1.SelectionStart = textBox1.Text.Length;
-                textBox1.SelectionLength = 0;
-                
-                if (textBox1.Text.Length == 9 && textBox1.Text.ToLower().StartsWith("cusa"))
-                {
-                    textBox1.Text = textBox1.Text.ToUpper();
-                    PDL1.GetDlcList(textBox1.Text, "", true);
-                }
-                else if (textBox1.Text.StartsWith("http") && textBox1.Text.Contains(".com/") && textBox1.Text.Contains("/product/") && textBox1.Text.ToLower().Contains("cusa") && textBox1.Text.Length > 36)
-                {
-                    htmBuffer = string.Empty;
-                    Spl1 = Regex.Split(textBox1.Text, ".com/");
-                    Spl2 = Regex.Split(Spl1[1], "/");
-                    titleRgn = Spl2[0];
-                    Spl1 = Regex.Split(textBox1.Text, "/product/");
-                    titleID = Spl1[1].Substring(7, 12);
-
-                    textBox1.Text = Spl1[1].Substring(7, 9);
-
-                    PDL1.GetDlcList(titleID, titleRgn, true);
-                }
-                else if (textBox1.Text.Length >= 19 && textBox1.Text.ToLower().Contains("cusa"))
-                {
-                    textBox1.Text = textBox1.Text.ToUpper();
-                    htmBuffer = string.Empty;
-                    titleID = textBox1.Text.Substring(7, 12);
-                    switch (textBox1.Text.Substring(0, 1))
-                    {
-                        case "U":
-                            titleRgn = "en-us";
-                            break;
-                        case "E":
-                            titleRgn = "en-gb";
-                            break;
-                        case "I":
-                            titleRgn = "en-us";
-                            break;
-                        default:
-                            titleRgn = "ja-jp";
-                            break;
-                    }
-                    textBox1.Text = textBox1.Text.Substring(7, 9);
-
-                    PDL1.GetDlcList(titleID, titleRgn,true);
-                }
-                else
-                {
-                    Button1.PerformClick();
-                }
-            }
-        }
-
         private void button7_Click(object sender, EventArgs e)
         {
             panel2.Visible = false;
@@ -884,20 +909,20 @@ namespace psDLC
                 }
 
 
-                if (!LvItem.SubItems[3].Text.Contains("-PPSA"))
-                {
+              //  if (!LvItem.SubItems[3].Text.Contains("-PPSA"))
+              //  {
                     linkLabel1.Text = LvItem.SubItems[3].Text;
-                }
-                else
-                {
-                    linkLabel1.Text = LvItem.Text;
-                }
+              //  }
+              //  else
+              //  {
+                //    linkLabel1.Text = LvItem.Text;
+              //  }
                 selName = LvItem.Text;
                 selCid = LvItem.SubItems[3].Text;
                 selImg = LvItem.SubItems[4].Text;
 
 
-                if (settings.GetSetting("check14", false) == true && !selCid.Contains("-PPSA"))
+                if (settings.GetSetting("check14", false) == true) //&& !selCid.Contains("-PPSA")
                 {
                     PDL1.GetDlcInfo(titleRgn, Regex.Split(selCid, "/")[Regex.Split(selCid, "/").Length - 1]);
                 }
@@ -971,7 +996,24 @@ namespace psDLC
             settings.SaveSetting("check14", checkBox14.Checked);
         }
 
+        private string FileSize(String bytes)
+        {
+            string size = "0 Bytes";
+            try
+            {
+                double byteCount = Double.Parse(bytes);
+                if (byteCount >= 1073741824.0)
+                    size = String.Format("{0:##.##}", byteCount / 1073741824.0) + " GB";
+                else if (byteCount >= 1048576.0)
+                    size = String.Format("{0:##.##}", byteCount / 1048576.0) + " MB";
+                else if (byteCount >= 1024.0)
+                    size = String.Format("{0:##.##}", byteCount / 1024.0) + " KB";
+                else if (byteCount > 0 && byteCount < 1024.0)
+                    size = byteCount.ToString() + " Bytes";
+                return size;
+            }
+            catch (Exception) { return size;}
+        }
 
- 
     }
 }

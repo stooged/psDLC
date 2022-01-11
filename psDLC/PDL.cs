@@ -42,7 +42,9 @@ namespace psDLC
             oWeb.DownloadStringCompleted += new DownloadStringCompletedEventHandler(GetDlcList_DownloadStringCompleted);
             oWeb.Headers.Add("Accept-Language", "en-US");
             oWeb.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64)");
-            if (TitleID.ToLower().StartsWith("ppsa"))
+
+
+            if (TitleID.ToLower().StartsWith("ppsa") && tryV2)
             {
                 oWeb.Headers.Add("Accept", "text/html");
                 oWeb.Headers.Add("Referer", "https://serialstation.com");
@@ -50,7 +52,7 @@ namespace psDLC
                 TitleID = TitleID.Replace("ppsa", "");
                 oWeb.DownloadStringAsync(new Uri("https://serialstation.com/titles/PPSA/" + TitleID));
             }
-            if (TitleID.ToLower().StartsWith("cusa") && tryV2)
+            else if (TitleID.ToLower().StartsWith("cusa") && tryV2)
             {
                 oWeb.Headers.Add("Accept", "text/html");
                 oWeb.Headers.Add("Referer", "https://serialstation.com");
@@ -58,11 +60,32 @@ namespace psDLC
                 TitleID = TitleID.Replace("cusa", "");
                 oWeb.DownloadStringAsync(new Uri("https://serialstation.com/titles/CUSA/" + TitleID));
             }
-            else if (TitleID.ToLower().StartsWith("cusa"))
+            else if (TitleID.ToLower().StartsWith("cusa") || TitleID.ToLower().StartsWith("ppsa"))
             {
+                if (!TitleID.EndsWith("_00")) { TitleID = TitleID + "_00"; }
                 oWeb.Headers.Add("Accept", "application/json");
                 oWeb.Headers.Add("Referer", "https://store.playstation.com/");
-                oWeb.DownloadStringAsync(new Uri("https://store.playstation.com/store/api/chihiro/00_09_000/titlecontainer/" + Region.Substring(3, 2).ToUpper() + "/" + Region.Substring(0, 2) + "/999/" + TitleID));
+                if (TitleID.ToLower().StartsWith("ppsa"))
+                {
+                    WebClient pWeb = new WebClient();
+                    pWeb.Headers.Add("Accept-Language", "en-US");
+                    pWeb.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64)");
+
+                    try
+                    {
+                        pWeb.DownloadString(new Uri("https://store.playstation.com/store/api/chihiro/00_09_000/titlecontainer/US/en/999/" + TitleID));
+                    }
+                    catch (Exception)
+                    {
+                        oWeb.DownloadStringAsync(new Uri("https://store.playstation.com/store/api/chihiro/00_09_000/titlecontainer/GB/en/999/" + TitleID));
+                        return;
+                    }
+                    oWeb.DownloadStringAsync(new Uri("https://store.playstation.com/store/api/chihiro/00_09_000/titlecontainer/US/en/999/" + TitleID));
+                }
+                else
+                {
+                    oWeb.DownloadStringAsync(new Uri("https://store.playstation.com/store/api/chihiro/00_09_000/titlecontainer/" + Region.Substring(3, 2).ToUpper() + "/" + Region.Substring(0, 2) + "/999/" + TitleID));
+                }
             }
             else if (TitleID.ToLower().StartsWith("up") || TitleID.ToLower().StartsWith("ep"))
             {
@@ -235,6 +258,7 @@ namespace psDLC
                 }
                 DlcInfoError(this, DataEvent);
             }
+            
         }
         
 
