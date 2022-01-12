@@ -117,8 +117,7 @@ namespace psDLC
 
                 for (int i = 1; i < Spl1.Length; i++)
                 {
-
-                    if (Spl1[i].Contains("\"top_category\":\"add_on\"") || Spl1[i].Contains("\"top_category\":\"avatar\"") || Spl1[i].Contains("\"top_category\":\"theme\"") || Spl1[i].Contains("\"top_category\":\"game_content\""))
+                    if (Spl1[i].Contains("\"top_category\":\"add_on\"") || Spl1[i].Contains("\"top_category\":\"avatar\"") || Spl1[i].Contains("\"top_category\":\"theme\"")  || Spl1[i].Contains("\"top_category\":\"game_content\""))
                     {
 
                         Spl3 = Regex.Split(Spl1[i], ",\"name\":\"");
@@ -391,7 +390,6 @@ namespace psDLC
 
                 for (int i = 1; i < Spl1.Length; i++)
                 {
-
                     if (Spl1[i].Contains("\"top_category\":\"downloadable_game\""))
                     {
                         Spl3 = Regex.Split(Spl1[i], "\"short_name\":\"");

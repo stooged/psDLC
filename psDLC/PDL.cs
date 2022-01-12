@@ -77,21 +77,21 @@ namespace psDLC
                     }
                     catch (Exception)
                     {
-                        oWeb.DownloadStringAsync(new Uri("https://store.playstation.com/store/api/chihiro/00_09_000/titlecontainer/GB/en/999/" + TitleID));
+                        oWeb.DownloadStringAsync(new Uri("https://store.playstation.com/store/api/chihiro/00_09_000/titlecontainer/GB/en/999/" + TitleID + "?size=999"));
                         return;
                     }
-                    oWeb.DownloadStringAsync(new Uri("https://store.playstation.com/store/api/chihiro/00_09_000/titlecontainer/US/en/999/" + TitleID));
+                    oWeb.DownloadStringAsync(new Uri("https://store.playstation.com/store/api/chihiro/00_09_000/titlecontainer/US/en/999/" + TitleID + "?size=999"));
                 }
                 else
                 {
-                    oWeb.DownloadStringAsync(new Uri("https://store.playstation.com/store/api/chihiro/00_09_000/titlecontainer/" + Region.Substring(3, 2).ToUpper() + "/" + Region.Substring(0, 2) + "/999/" + TitleID));
+                    oWeb.DownloadStringAsync(new Uri("https://store.playstation.com/store/api/chihiro/00_09_000/titlecontainer/" + Region.Substring(3, 2).ToUpper() + "/" + Region.Substring(0, 2) + "/999/" + TitleID + "?size=999"));
                 }
             }
             else if (TitleID.ToLower().StartsWith("up") || TitleID.ToLower().StartsWith("ep"))
             {
                 oWeb.Headers.Add("Accept", "application/json");
                 oWeb.Headers.Add("Referer", "https://store.playstation.com/");
-                oWeb.DownloadStringAsync(new Uri("https://store.playstation.com/store/api/chihiro/00_09_000/container/" + Region.Substring(3, 2).ToUpper() + "/" + Region.Substring(0, 2) + "/999/" + TitleID));
+                oWeb.DownloadStringAsync(new Uri("https://store.playstation.com/store/api/chihiro/00_09_000/container/" + Region.Substring(3, 2).ToUpper() + "/" + Region.Substring(0, 2) + "/999/" + TitleID + "?size=999"));
             }
         }
 
@@ -137,7 +137,7 @@ namespace psDLC
             oWeb.Headers.Add("Accept", "application/json");
             oWeb.Headers.Add("Accept-Language", "en-US");
             oWeb.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64)");
-            oWeb.DownloadStringAsync(new Uri("https://store.playstation.com/store/api/chihiro/00_09_000/container/" + Region.Substring(3, 2).ToUpper() + "/" + Region.Substring(0, 2) + "/999/" + contentID));
+            oWeb.DownloadStringAsync(new Uri("https://store.playstation.com/store/api/chihiro/00_09_000/container/" + Region.Substring(3, 2).ToUpper() + "/" + Region.Substring(0, 2) + "/999/" + contentID + "?size=999"));
         }
 
 
@@ -163,7 +163,7 @@ namespace psDLC
             oWeb.Headers.Add("Accept", "application/json");
             oWeb.Headers.Add("Accept-Language", "en-US");
             oWeb.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64)");
-            oWeb.DownloadStringAsync(new Uri("https://store.playstation.com/store/api/chihiro/00_09_000/search/" + Region.Substring(3, 2).ToUpper() + "/" + Region.Substring(0, 2) + "/999/" + HttpUtility.UrlEncode(strQry)));
+            oWeb.DownloadStringAsync(new Uri("https://store.playstation.com/store/api/chihiro/00_09_000/search/" + Region.Substring(3, 2).ToUpper() + "/" + Region.Substring(0, 2) + "/999/" + HttpUtility.UrlEncode(strQry) + "?size=999"));
         }
 
 
